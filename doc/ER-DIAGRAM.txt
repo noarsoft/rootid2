@@ -1,0 +1,523 @@
+# ER DIAGRAM
+Root-ID Figma Prototype Backend
+
+====================================================
+1. MAIN TABLES
+====================================================
+
+business
+data_schema
+data
+form
+tableview
+
+
+====================================================
+2. ROOT-ID VERSIONING CONCEPT
+====================================================
+
+ทุก table เป็น versioned object
+
+System fields:
+  id
+    primary key ของ row/version นั้น
+
+  _rootid
+    id กลางของ object family
+    ทุก version ของ object เดียวกันใช้ _rootid เดียวกัน
+
+  _prev_id
+    ชี้ไป version ก่อนหน้าใน table เดียวกัน
+
+  _flag
+    สถานะของ row/version
+
+    ''  = current/latest
+    'u' = updated/history version
+    'd' = deleted marker
+
+  _modify_datetime
+    เวลาแก้ไขแบบ compact number
+    format YYYYMMDDHHMMSS
+
+  created_at
+    เวลาสร้าง row
+
+  updated_at
+    เวลา update row
+    หมายเหตุ: ไม่มี trigger updated_at แล้ว
+
+หลัก version:
+  create:
+    insert row ใหม่
+    id = _rootid
+    _prev_id = null
+    _flag = ''
+
+  update:
+    insert row ใหม่เป็น current
+    _rootid เดิม
+    _prev_id = id ของ current เดิม
+    _flag = ''
+    แล้ว mark current เดิมเป็น _flag = 'u'
+
+  delete:
+    insert deleted marker
+    _rootid เดิม
+    _prev_id = id ของ current เดิม
+    _flag = 'd'
+    แล้ว mark current เดิมเป็น _flag = 'u'
+
+  restore:
+    copy version เก่ามาเป็น current ใหม่
+    _prev_id = last version id
+    _flag = ''
+
+
+====================================================
+3. ER DIAGRAM
+====================================================
+
+┌──────────────────────────────┐
+│           business            │
+│──────────────────────────────│
+│ id PK                        │
+│ _rootid                      │
+│ _prev_id FK -> business.id   │
+│ _flag                        │
+│ name                         │
+│ icon                         │
+│ _modify_datetime             │
+│ created_at                   │
+│ updated_at                   │
+└──────────────┬───────────────┘
+               │
+               │ business.id
+               │
+               ▼
+┌──────────────────────────────┐
+│          data_schema          │
+│──────────────────────────────│
+│ id PK                        │
+│ _rootid                      │
+│ _prev_id FK -> data_schema.id│
+│ _flag                        │
+│ business_id FK -> business.id│
+│ name                         │
+│ payload JSONB                │
+│ _modify_datetime             │
+│ created_at                   │
+│ updated_at                   │
+└──────────────┬───────────────┘
+               │
+               │ data_schema.id
+               │
+       ┌───────┴────────┬────────────────┐
+       │                │                │
+       ▼                ▼                ▼
+┌────────────────┐ ┌────────────────┐ ┌────────────────┐
+│      data       │ │      form      │ │   tableview    │
+│────────────────│ │────────────────│ │────────────────│
+│ id PK          │ │ id PK          │ │ id PK          │
+│ _rootid        │ │ _rootid        │ │ _rootid        │
+│ _prev_id       │ │ _prev_id       │ │ _prev_id       │
+│ _flag          │ │ _flag          │ │ _flag          │
+│ data_schema_id │ │ data_schema_id │ │ data_schema_id │
+│ payload JSONB  │ │ schema_rootid  │ │ schema_rootid  │
+│ transfer fields│ │ payload JSONB  │ │ payload JSONB  │
+└────────────────┘ └────────────────┘ └────────────────┘
+
+
+====================================================
+4. TABLE: business
+====================================================
+
+Purpose:
+  เก็บข้อมูลโครงการ/ธุรกิจ/tenant
+
+Fields:
+  id BIGSERIAL PRIMARY KEY
+  _rootid BIGINT NOT NULL
+  _prev_id BIGINT NULL REFERENCES business(id)
+  _flag TEXT NOT NULL DEFAULT ''
+  name TEXT NOT NULL
+  icon TEXT NULL
+  _modify_datetime BIGINT NOT NULL
+  created_at TIMESTAMPTZ NOT NULL
+  updated_at TIMESTAMPTZ NOT NULL
+
+Constraints:
+  _flag IN ('', 'u', 'd')
+
+Indexes:
+  idx_business_rootid
+  idx_business_current
+  idx_business_flag
+  idx_business_name
+
+
+====================================================
+5. TABLE: data_schema
+====================================================
+
+Purpose:
+  เก็บ schema/config ของข้อมูล
+  payload คือ field definition
+
+Fields:
+  id BIGSERIAL PRIMARY KEY
+  _rootid BIGINT NOT NULL
+  _prev_id BIGINT NULL REFERENCES data_schema(id)
+  _flag TEXT NOT NULL DEFAULT ''
+  business_id BIGINT NULL REFERENCES business(id)
+  name TEXT NOT NULL
+  payload JSONB NOT NULL DEFAULT '{}'
+  _modify_datetime BIGINT NOT NULL
+  created_at TIMESTAMPTZ NOT NULL
+  updated_at TIMESTAMPTZ NOT NULL
+
+payload example:
+  {
+    "fname": {
+      "type": "string",
+      "label": "First name",
+      "required": true
+    },
+    "age": {
+      "type": "integer",
+      "label": "Age"
+    }
+  }
+
+Constraints:
+  _flag IN ('', 'u', 'd')
+
+Indexes:
+  idx_data_schema_business_id
+  idx_data_schema_rootid
+  idx_data_schema_current
+  idx_data_schema_flag
+  idx_data_schema_name
+  idx_data_schema_payload_gin
+
+
+====================================================
+6. TABLE: data
+====================================================
+
+Purpose:
+  เก็บข้อมูลจริง
+  data row แต่ละ version ผูกกับ schema version ที่ใช้สร้างข้อมูลนั้น
+
+Fields:
+  id BIGSERIAL PRIMARY KEY
+  _rootid BIGINT NOT NULL
+  _prev_id BIGINT NULL REFERENCES data(id)
+  _flag TEXT NOT NULL DEFAULT ''
+
+  _transfer_version BIGINT NOT NULL DEFAULT 0
+  _transfer_datetime BIGINT NULL
+
+  data_schema_id BIGINT NOT NULL REFERENCES data_schema(id)
+  payload JSONB NOT NULL DEFAULT '{}'
+
+  _modify_datetime BIGINT NOT NULL
+  created_at TIMESTAMPTZ NOT NULL
+  updated_at TIMESTAMPTZ NOT NULL
+
+data_schema_id:
+  FK ไป data_schema.id
+  หมายถึง data row นี้สร้างจาก schema version ไหน
+
+_transfer_version:
+  ใช้สำหรับ warehouse transfer
+  0 = ยังไม่ transfer
+
+_transfer_datetime:
+  เวลา transfer สำเร็จ
+  NULL = ยังไม่ transfer
+
+payload example:
+  {
+    "fname": "Somchai",
+    "age": 20
+  }
+
+Constraints:
+  _flag IN ('', 'u', 'd')
+  _transfer_version >= 0
+
+Indexes:
+  idx_data_rootid
+  idx_data_current
+  idx_data_schema_id
+  idx_data_flag
+  idx_data_transfer_version
+  idx_data_transfer_datetime
+  idx_data_transfer_pending
+  idx_data_payload_gin
+
+
+====================================================
+7. TABLE: form
+====================================================
+
+Purpose:
+  เก็บ form config / form layout
+  ใช้ render input form
+
+Fields:
+  id BIGSERIAL PRIMARY KEY
+  _rootid BIGINT NOT NULL
+  _prev_id BIGINT NULL REFERENCES form(id)
+  _flag TEXT NOT NULL DEFAULT ''
+
+  data_schema_id BIGINT NULL REFERENCES data_schema(id)
+  data_schema_rootid BIGINT NULL
+
+  payload JSONB NOT NULL DEFAULT '{}'
+
+  _modify_datetime BIGINT NOT NULL
+  created_at TIMESTAMPTZ NOT NULL
+  updated_at TIMESTAMPTZ NOT NULL
+
+Binding modes:
+  1. fixed/edit/replay mode
+     data_schema_id IS NOT NULL
+     form นี้ผูกกับ schema version เฉพาะ
+
+  2. root/latest mode
+     data_schema_rootid IS NOT NULL
+     form นี้ผูกกับ schema family
+
+Important:
+  หน้า edit data ใช้ latest form จาก schema root id
+  data version เดิมยังผูก data_schema_id ของตัวเอง
+  frontend เอา latest form มา match กับ data payload ตาม field ที่ตรงกัน
+
+payload example:
+  {
+    "controls": [
+      {
+        "databind": "fname",
+        "label": "First name",
+        "control": "textbox"
+      },
+      {
+        "databind": "age",
+        "label": "Age",
+        "control": "numberbox"
+      }
+    ]
+  }
+
+Constraints:
+  _flag IN ('', 'u', 'd')
+  data_schema_id IS NOT NULL OR data_schema_rootid IS NOT NULL
+
+Indexes:
+  idx_form_rootid
+  idx_form_current
+  idx_form_data_schema_id
+  idx_form_data_schema_rootid
+  idx_form_flag
+  idx_form_payload_gin
+
+
+====================================================
+8. TABLE: tableview
+====================================================
+
+Purpose:
+  เก็บ table view/display config
+  ใช้ render table/list/grid
+
+Fields:
+  id BIGSERIAL PRIMARY KEY
+  _rootid BIGINT NOT NULL
+  _prev_id BIGINT NULL REFERENCES tableview(id)
+  _flag TEXT NOT NULL DEFAULT ''
+
+  data_schema_id BIGINT NULL REFERENCES data_schema(id)
+  data_schema_rootid BIGINT NULL
+
+  payload JSONB NOT NULL DEFAULT '{}'
+
+  _modify_datetime BIGINT NOT NULL
+  created_at TIMESTAMPTZ NOT NULL
+  updated_at TIMESTAMPTZ NOT NULL
+
+Binding modes:
+  1. fixed/edit/replay mode
+     data_schema_id IS NOT NULL
+     tableview นี้ผูกกับ schema version เฉพาะ
+
+  2. latest-root table view
+     data_schema_rootid IS NOT NULL
+     tableview นี้ผูกกับ schema family
+     ใช้ schema ล่าสุดเป็นหัว column
+
+Important:
+  แสดงตารางควรใช้ data_schema_rootid + _flag = ''
+  เพราะหัว column ของ tableview ต้องอิง schema ล่าสุด
+  data เก่าที่ schema ไม่ตรง latest schema ให้ frontend แสดง updated/warning
+
+payload example:
+  {
+    "columns": [
+      {
+        "databind": "fname",
+        "header": "First name",
+        "control": "label",
+        "width": 160
+      },
+      {
+        "databind": "age",
+        "header": "Age",
+        "control": "number",
+        "width": 100
+      }
+    ]
+  }
+
+Constraints:
+  _flag IN ('', 'u', 'd')
+  data_schema_id IS NOT NULL OR data_schema_rootid IS NOT NULL
+
+Indexes:
+  idx_tableview_rootid
+  idx_tableview_current
+  idx_tableview_data_schema_id
+  idx_tableview_data_schema_rootid
+  idx_tableview_flag
+  idx_tableview_payload_gin
+
+
+====================================================
+9. RELATIONSHIPS
+====================================================
+
+business 1:N data_schema
+  data_schema.business_id -> business.id
+
+data_schema 1:N data
+  data.data_schema_id -> data_schema.id
+
+data_schema 1:N form
+  form.data_schema_id -> data_schema.id
+
+data_schema family 1:N form
+  form.data_schema_rootid -> data_schema._rootid
+
+data_schema 1:N tableview
+  tableview.data_schema_id -> data_schema.id
+
+data_schema family 1:N tableview
+  tableview.data_schema_rootid -> data_schema._rootid
+
+self reference:
+  business._prev_id -> business.id
+  data_schema._prev_id -> data_schema.id
+  data._prev_id -> data.id
+  form._prev_id -> form.id
+  tableview._prev_id -> tableview.id
+
+
+====================================================
+10. CURRENT / LATEST RULE
+====================================================
+
+Current/latest:
+  SELECT *
+  FROM table_name
+  WHERE _rootid = ?
+    AND _flag = ''
+  ORDER BY id DESC
+  LIMIT 1
+
+Last version including deleted:
+  SELECT *
+  FROM table_name
+  WHERE _rootid = ?
+  ORDER BY id DESC
+  LIMIT 1
+
+List current/latest:
+  SELECT *
+  FROM table_name
+  WHERE _flag = ''
+  ORDER BY updated_at DESC, id DESC
+
+List latest including deleted:
+  SELECT DISTINCT ON (_rootid) *
+  FROM table_name
+  ORDER BY _rootid, id DESC
+
+
+====================================================
+11. SCHEMA FAMILY LOOKUP
+====================================================
+
+For data:
+  data has only data_schema_id
+
+  data.data_schema_id -> data_schema.id
+  data_schema._rootid = schemaRootId
+
+For form/tableview:
+  support 2 ways
+
+  fixed mode:
+    object.data_schema_id -> data_schema.id
+    data_schema._rootid = schemaRootId
+
+  root/latest mode:
+    object.data_schema_rootid = schemaRootId
+
+Query concept:
+  LEFT JOIN data_schema ds
+    ON ds.id = object.data_schema_id
+
+  WHERE ds._rootid = schemaRootId
+     OR object.data_schema_rootid = schemaRootId
+
+
+====================================================
+12. TABLE DISPLAY FLOW
+====================================================
+
+Goal:
+  แสดง table โดยใช้ schema ล่าสุดเป็นหัว column
+
+Flow:
+  1. tableview ผูก data_schema_rootid
+  2. tableview current คือ _flag = ''
+  3. backend resolve latest schema:
+       data_schema._rootid = tableview.data_schema_rootid
+       data_schema._flag = ''
+  4. backend ดึง data ใน schema family
+  5. backend compare data.payload กับ latest schema.payload
+  6. backend return cells/removed/compare
+  7. frontend render table
+  8. field/type ไม่ตรงให้ frontend แสดง updated/warning
+
+
+====================================================
+13. EDIT DATA FLOW
+====================================================
+
+Goal:
+  เปิด edit data version เดิม
+
+Flow:
+  1. frontend ส่ง data version id
+  2. backend get data by id ไม่สน flag
+  3. data.data_schema_id -> oldSchema
+  4. oldSchema._rootid -> latestSchema
+  5. oldSchema._rootid -> latestForm
+  6. backend compare data.payload กับ latestSchema.payload
+  7. frontend เอา latestForm.controls ไป match data payload
+  8. field ตรงกันใช้ค่าเดิม
+  9. field ใหม่ใช้ default/blank
+  10. field type เปลี่ยนหรือถูกลบให้แสดง updated/warning
+  11. save เป็น version ใหม่ของ data rootid

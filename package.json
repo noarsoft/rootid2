@@ -1,0 +1,33 @@
+{
+  "name": "rootidx",
+  "version": "1.0.0",
+  "description": "Root-ID Figma prototype using PostgreSQL versioned tables",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "src/server.js",
+  "scripts": {
+    "migrate": "node src/db/migrate.js",
+    "drop": "node src/db/drop.js",
+    "reset-db": "npm run drop && npm run migrate",
+    "start": "npm run migrate && node src/server.js",
+    "dev": "npm run migrate && nodemon src/server.js",
+    "dev:no-migrate": "nodemon src/server.js",
+    "start:no-migrate": "node src/server.js",
+    "test": "jest --passWithNoTests"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.1.0",
+    "pg": "^8.13.1",
+    "sanitize-html": "^2.14.0",
+    "uuid": "^11.0.5"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "nodemon": "^3.1.9"
+  }
+}

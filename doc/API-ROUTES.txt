@@ -1,0 +1,535 @@
+# API ROUTES
+Root-ID Figma Prototype Backend
+
+Base URL:
+  /api
+
+Health:
+  GET /api/health
+
+แนวคิดหลัก:
+- ทุก object เป็น versioned object
+- current/latest คือ row ที่ _flag = ''
+- old/history คือ row ที่ _flag = 'u'
+- deleted marker คือ row ล่าสุดที่ _flag = 'd'
+- update/delete/restore ใช้ append version ใหม่
+- data/form/tableview ผูกกับ data_schema version ผ่าน data_schema_id
+- form/tableview สามารถผูกกับ schema family ผ่าน data_schema_rootid ได้ด้วย
+
+====================================================
+1. BUSINESS
+====================================================
+
+GET /api/business
+  List business current/latest
+  Query:
+    limit
+    offset
+    includeDeleted
+
+POST /api/business
+  Create business
+  Body:
+    {
+      "name": "Project A",
+      "icon": "optional-icon"
+    }
+
+GET /api/business/:id
+  Get business by version id
+  ไม่สน _flag
+
+GET /api/business/root/:rootid/latest
+  Get latest/current business by rootid
+  Query:
+    includeDeleted=true|false
+
+GET /api/business/root/:rootid/history
+  Get business history by rootid
+  Query:
+    limit
+    offset
+    order=ASC|DESC
+
+PATCH /api/business/root/:rootid
+  Update business by rootid
+  Body:
+    {
+      "name": "New name",
+      "icon": "new-icon"
+    }
+
+DELETE /api/business/root/:rootid
+  Soft delete business by rootid
+
+
+====================================================
+2. DATA SCHEMA
+====================================================
+
+GET /api/schema
+  List latest/current schemas
+  Query:
+    limit
+    offset
+    includeDeleted
+    business_id
+
+POST /api/schema
+  Create schema
+  Body:
+    {
+      "name": "Customer",
+      "business_id": 1,
+      "payload": {
+        "fname": {
+          "type": "string",
+          "label": "First name",
+          "required": true
+        },
+        "age": {
+          "type": "integer",
+          "label": "Age"
+        }
+      }
+    }
+
+GET /api/schema/:id
+  Get schema by version id
+  ไม่สน _flag
+
+POST /api/schema/:id/validate
+  Validate payload against schema version id
+  Body:
+    {
+      "payload": {
+        "fname": "Somchai",
+        "age": 20
+      },
+      "allowExtraFields": false
+    }
+
+GET /api/schema/:id/compare-latest
+  Compare schema version id with latest schema in same root family
+
+POST /api/schema/:id/restore
+  Restore schema from version id
+  สร้าง current version ใหม่จาก version เก่า
+
+GET /api/schema/root/:rootid/latest
+  Get latest/current schema by rootid
+  Query:
+    includeDeleted=true|false
+
+GET /api/schema/root/:rootid/history
+  Get schema history by rootid
+  Query:
+    limit
+    offset
+    order=ASC|DESC
+
+PATCH /api/schema/root/:rootid
+  Update schema by rootid
+  Body:
+    {
+      "name": "Customer v2",
+      "payload": {
+        "fname": {
+          "type": "string",
+          "label": "First name"
+        },
+        "age": {
+          "type": "integer",
+          "label": "Age"
+        },
+        "email": {
+          "type": "string",
+          "label": "Email"
+        }
+      }
+    }
+
+DELETE /api/schema/root/:rootid
+  Soft delete schema by rootid
+
+
+====================================================
+3. DATA
+====================================================
+
+GET /api/data
+  List latest/current data rows
+  Query:
+    limit
+    offset
+    includeDeleted
+    data_schema_id
+    data_schema_rootid
+
+POST /api/data
+  Create data
+  Body:
+    {
+      "data_schema_id": 1,
+      "payload": {
+        "fname": "Somchai",
+        "age": 20
+      },
+      "allowExtraFields": false
+    }
+
+GET /api/data/schema/:schemaId
+  List latest/current data rows by exact schema version id
+
+GET /api/data/schema-root/:schemaRootId
+  List latest/current data rows in schema family
+  ใช้ data.data_schema_id join data_schema.id แล้วเทียบ data_schema._rootid
+
+GET /api/data/:id
+  Get data by version id
+  ไม่สน _flag
+  ใช้ตอน edit/replay version เก่าได้
+
+GET /api/data/:id/edit-context
+  Get edit context by data version id
+  ใช้เปิดหน้า edit จาก data version เดิม
+  Backend จะคืน:
+    - data
+    - oldSchema
+    - latestSchema
+    - latestForm
+    - isLatestSchema
+    - cells
+    - removed
+    - compare
+
+  แนวคิด:
+    - data ผูกกับ data_schema_id
+    - edit ดึง data version ตาม id ไม่สน flag
+    - latest schema resolve จาก oldSchema._rootid + _flag=''
+    - latest form resolve จาก schema root id + _flag=''
+    - frontend เอา field ที่ match กันไป render/edit
+    - field ที่ schema version เก่าไม่ตรง latest ให้ frontend แสดง warning/updated
+
+GET /api/data/:id/compare-latest-schema
+  Compare data row payload with latest schema in same schema family
+
+POST /api/data/:id/restore
+  Restore data from version id
+
+GET /api/data/root/:rootid/latest
+  Get latest/current data by rootid
+  Query:
+    includeDeleted=true|false
+
+GET /api/data/root/:rootid/history
+  Get data history by rootid
+  Query:
+    limit
+    offset
+    order=ASC|DESC
+
+PATCH /api/data/root/:rootid
+  Update data by rootid
+  Body:
+    {
+      "data_schema_id": 2,
+      "payload": {
+        "fname": "Somchai Updated",
+        "age": 21
+      },
+      "allowExtraFields": false
+    }
+
+POST /api/data/root/:rootid/save-latest-schema-version
+  Save data as latest schema version
+  ใช้ map payload เดิมไป latest schema
+  Body:
+    {
+      "payload": {},
+      "force": false,
+      "allowExtraFields": false
+    }
+
+POST /api/data/root/:rootid/migrate-latest-schema
+  Migrate latest data row to latest schema
+  Body:
+    {
+      "force": false
+    }
+
+DELETE /api/data/root/:rootid
+  Soft delete data by rootid
+
+
+====================================================
+4. FORM
+====================================================
+
+GET /api/form
+  List latest/current forms
+  Query:
+    limit
+    offset
+    includeDeleted
+    data_schema_id
+    data_schema_rootid
+
+POST /api/form
+  Create form
+  Body:
+    {
+      "data_schema_id": 1,
+      "data_schema_rootid": null,
+      "payload": {
+        "controls": [
+          {
+            "databind": "fname",
+            "label": "First name",
+            "control": "textbox"
+          }
+        ]
+      }
+    }
+
+Binding:
+  fixed/edit/replay mode:
+    data_schema_id = schema version id
+
+  root/latest mode:
+    data_schema_rootid = schema root id
+
+GET /api/form/schema/:schemaId
+  List latest/current forms by exact schema version id
+
+GET /api/form/schema-root/:schemaRootId
+  List latest/current forms in schema family
+  รองรับทั้ง:
+    form.data_schema_id -> data_schema._rootid
+    form.data_schema_rootid -> schemaRootId
+
+GET /api/form/schema-root/:schemaRootId/latest
+  Get latest/current form in schema family
+  ใช้สำหรับหน้า edit data เพื่อดึง form ล่าสุด
+
+GET /api/form/:id
+  Get form by version id
+  ไม่สน _flag
+
+GET /api/form/:id/editor-context
+  Get form editor context
+  ถ้า form ผูก data_schema_id:
+    mode = fixed_schema
+    schema = schema version ที่ form ผูก
+
+  ถ้า form ผูก data_schema_rootid:
+    mode = root_latest
+    schema = latest schema ของ schema family
+
+POST /api/form/:id/restore
+  Restore form from version id
+
+GET /api/form/root/:rootid/latest
+  Get latest/current form by rootid
+  Query:
+    includeDeleted=true|false
+
+GET /api/form/root/:rootid/history
+  Get form history by rootid
+  Query:
+    limit
+    offset
+    order=ASC|DESC
+
+PATCH /api/form/root/:rootid
+  Update form by rootid
+  Body:
+    {
+      "data_schema_id": 2,
+      "data_schema_rootid": 1,
+      "payload": {
+        "controls": []
+      }
+    }
+
+POST /api/form/root/:rootid/migrate-latest-schema
+  Migrate form controls to latest schema
+  Body:
+    {
+      "force": false
+    }
+
+DELETE /api/form/root/:rootid
+  Soft delete form by rootid
+
+
+====================================================
+5. VIEW / TABLEVIEW
+====================================================
+
+GET /api/view
+  List latest/current tableviews
+  Query:
+    limit
+    offset
+    includeDeleted
+    data_schema_id
+    data_schema_rootid
+
+POST /api/view
+  Create tableview
+  Body:
+    {
+      "data_schema_id": null,
+      "data_schema_rootid": 1,
+      "payload": {
+        "columns": [
+          {
+            "databind": "fname",
+            "header": "First name",
+            "control": "label",
+            "width": 160
+          }
+        ]
+      }
+    }
+
+Binding:
+  fixed/edit/replay mode:
+    data_schema_id = schema version id
+
+  root/latest table view:
+    data_schema_rootid = schema root id
+
+GET /api/view/schema/:schemaId
+  List latest/current tableviews by exact schema version id
+
+GET /api/view/schema-root/:schemaRootId
+  List latest/current tableviews in schema family
+  รองรับทั้ง:
+    tableview.data_schema_id -> data_schema._rootid
+    tableview.data_schema_rootid -> schemaRootId
+
+GET /api/view/:id
+  Get tableview by version id
+  ไม่สน _flag
+
+GET /api/view/:id/editor-context
+  Get tableview editor context
+
+GET /api/view/:id/render-fixed
+  Render fixed schema view
+  ใช้ tableview.data_schema_id เป็น schema version ตายตัว
+  ดึง data ที่ผูกกับ schema version นั้น
+
+GET /api/view/:id/render-latest-root
+  Render latest root schema view
+  ใช้ latest schema เป็นหัว column
+  ดึง data ใน schema family มา compare กับ latest schema
+
+  ใช้สำหรับ:
+    - แสดงตารางโดยหัว column เป็น schema ล่าสุด
+    - data version เก่าที่ยัง field/type ไม่ตรง latest schema ให้ frontend แสดง warning/updated
+
+POST /api/view/:id/restore
+  Restore tableview from version id
+
+GET /api/view/root/:rootid/latest
+  Get latest/current tableview by rootid
+  Query:
+    includeDeleted=true|false
+
+GET /api/view/root/:rootid/history
+  Get tableview history by rootid
+  Query:
+    limit
+    offset
+    order=ASC|DESC
+
+PATCH /api/view/root/:rootid
+  Update tableview by rootid
+  Body:
+    {
+      "data_schema_id": null,
+      "data_schema_rootid": 1,
+      "payload": {
+        "columns": []
+      }
+    }
+
+POST /api/view/root/:rootid/migrate-latest-schema
+  Migrate tableview columns to latest schema
+  Body:
+    {
+      "force": false
+    }
+
+DELETE /api/view/root/:rootid
+  Soft delete tableview by rootid
+
+
+====================================================
+6. COMMON QUERY OPTIONS
+====================================================
+
+Pagination:
+  limit
+  offset
+
+History order:
+  order=ASC|DESC
+
+Include deleted:
+  includeDeleted=true|false
+
+หมายเหตุ:
+- includeDeleted=false:
+    คืนเฉพาะ current/latest ที่ _flag = ''
+
+- includeDeleted=true:
+    คืน last version ต่อ _rootid
+    ถ้าล่าสุดเป็น delete marker จะเห็น _flag = 'd'
+
+
+====================================================
+7. COMMON RESPONSE FORMAT
+====================================================
+
+Success:
+  {
+    "ok": true,
+    "data": {}
+  }
+
+Error:
+  {
+    "ok": false,
+    "error": {
+      "code": "ERROR_CODE",
+      "message": "Error message"
+    }
+  }
+
+
+====================================================
+8. IMPORTANT FLOW
+====================================================
+
+Table display flow:
+  1. tableview ผูก schema root id
+  2. GET /api/view/:id/render-latest-root
+  3. backend ใช้ latest schema เป็น columns
+  4. backend ดึง data ใน schema family
+  5. backend compare data row กับ latest schema
+  6. frontend แสดงค่าที่ตรง field/type
+  7. ถ้า data เก่าไม่ตรง latest schema ให้ frontend แสดง updated/warning
+
+Edit data flow:
+  1. frontend มี data version id
+  2. GET /api/data/:id/edit-context
+  3. backend คืน data version นั้น ไม่สน flag
+  4. backend คืน oldSchema จาก data.data_schema_id
+  5. backend คืน latestSchema จาก oldSchema._rootid
+  6. backend คืน latestForm จาก schema root id
+  7. frontend เอา latestForm + data payload มา match field
+  8. บันทึกด้วย PATCH /api/data/root/:rootid หรือ save-latest-schema-version
