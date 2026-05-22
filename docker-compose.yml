@@ -3,7 +3,7 @@
 
 # เข้าถึง pgAdmin ได้ที่ http://localhost:5050 Email: admin@example.com Password: admin
 # Add Server ใน pgAdmin
-# Name: rootidx-postgres
+# Name: rootid2-postgres
 # Host name/address: postgres
 # Port: 5433
 # Maintenance database: rootid_figma
@@ -13,7 +13,7 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: rootidx-postgres
+    container_name: rootid2-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: rootid_figma
@@ -23,7 +23,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - rootidx_pgdata:/var/lib/postgresql/data
+      - rootid2_pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U appuser -d rootid_figma"]
       interval: 5s
@@ -32,7 +32,7 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: rootidx-pgadmin
+    container_name: rootid2-pgadmin
     restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
@@ -41,11 +41,11 @@ services:
     ports:
       - "5050:80"
     volumes:
-      - rootidx_pgadmin:/var/lib/pgadmin
+      - rootid2_pgadmin:/var/lib/pgadmin
     depends_on:
       postgres:
         condition: service_healthy
 
 volumes:
-  rootidx_pgdata:
-  rootidx_pgadmin:
+  rootid2_pgdata:
+  rootid2_pgadmin:
