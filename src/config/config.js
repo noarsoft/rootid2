@@ -55,6 +55,14 @@ const config = {
     corsOrigin: getEnv("CORS_ORIGIN", "*"),
   },
 
+  auth: {
+    baseUrl: getEnv("AUTH_BASE_URL", "http://localhost:3001"),
+    meUrl: getEnv("AUTH_ME_URL", "http://localhost:3001/api/auth/me"),
+    loginUrl: getEnv("AUTH_LOGIN_URL", "http://localhost:3001/login.html"),
+    redirectParam: getEnv("AUTH_REDIRECT_PARAM", "redirect"),
+    requestTimeoutMs: getIntEnv("AUTH_REQUEST_TIMEOUT_MS", 5000),
+  },
+
   db: {
     host: getEnv("PGHOST", "localhost"),
     port: getIntEnv("PGPORT", 5432),

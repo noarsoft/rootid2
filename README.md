@@ -50,6 +50,12 @@ DB_NAME=rootidx
 DB_USER=postgres
 DB_PASSWORD=yourpassword
 PORT=3000
+CORS_ORIGIN=http://localhost:3002
+AUTH_BASE_URL=http://localhost:3001
+AUTH_ME_URL=http://localhost:3001/api/auth/me
+AUTH_LOGIN_URL=http://localhost:3001/login.html
+AUTH_REDIRECT_PARAM=redirect
+AUTH_REQUEST_TIMEOUT_MS=5000
 ```
 
 ## API Routes

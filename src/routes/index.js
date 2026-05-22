@@ -7,6 +7,7 @@ const createSchemaRoute = require("./schema.route");
 const createDataRoute = require("./data.route");
 const createFormRoute = require("./form.route");
 const createViewRoute = require("./view.route");
+const { requireAuth } = require("../middlewares/auth.middleware");
 
 function createRoutes(db) {
   const router = express.Router();
@@ -18,6 +19,8 @@ function createRoutes(db) {
       timestamp: Date.now(),
     });
   });
+
+  router.use(requireAuth);
 
   router.use("/business", createBusinessRoute(db));
   router.use("/schema", createSchemaRoute(db));
