@@ -76,6 +76,8 @@ const ALLOWED_FIELD_TYPES = new Set([
   "slider",
   "rating",
   "fileupload",
+  "singleupload",
+  "multipleupload",
   "pagebreak",
   "label",
   "link",
@@ -300,6 +302,7 @@ function isValueTypeValid(value, type) {
     case "email":
     case "searchbox":
     case "file":
+    case "singleupload":
     case "multipleupload":
     case "label":
     case "link":
@@ -517,6 +520,7 @@ function validatePayloadAgainstSchema(payload, schemaPayload, options = {}) {
   assertPlainObject(schemaPayload, "schema payload");
 
   const allowExtraFields = Boolean(options.allowExtraFields);
+  const enumValidatedTypes = new Set(["select", "dropdown"]);
   const errors = [];
 
   for (const [fieldName, fieldConfig] of Object.entries(schemaPayload)) {
@@ -547,7 +551,11 @@ function validatePayloadAgainstSchema(payload, schemaPayload, options = {}) {
       });
     }
 
-    if (Array.isArray(fieldConfig.enum) && value != null) {
+    if (
+      enumValidatedTypes.has(type) &&
+      Array.isArray(fieldConfig.enum) &&
+      value != null
+    ) {
       const enumMatch = fieldConfig.enum.some((e) =>
         e === value || (e && typeof e === "object" && e.value === value)
       );
@@ -718,10 +726,6 @@ class SchemaService {
   async updateSchema(rootid, input = {}) {
     const patch = {};
 
-    const currentSchema = await this.repo.getLatestOrThrow(rootid, {
-      includeDeleted: false,
-    });
-
     if (input.name !== undefined) {
       const name = String(input.name || "").trim();
 
@@ -739,10 +743,6 @@ class SchemaService {
     }
 
     const updatedSchema = await this.repo.updateByRootId(rootid, patch);
-
-    if (input.payload !== undefined) {
-      await this.markLatestDataBySchemaIdAsUpdated(currentSchema.id);
-    }
 
     return updatedSchema;
   }

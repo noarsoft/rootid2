@@ -14,7 +14,26 @@
     "dev": "npm run migrate && nodemon src/server.js",
     "dev:no-migrate": "nodemon src/server.js",
     "start:no-migrate": "node src/server.js",
-    "test": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests",
+
+
+    "bench:clear": "node benchmark/scripts/clear-benchmark-data.js",
+
+
+    "bench:wiki:normalize": "node benchmark/scripts/normalize-wiki-data.js --input=benchmark/data/json --output=benchmark/data/wiki-normalized.json",
+    "bench:wiki:normalize:small": "node benchmark/scripts/normalize-wiki-data.js --input=benchmark/data/json --output=benchmark/data/wiki-normalized-small.json --max-pages=100 --max-revisions-per-page=5",
+    "bench:wiki:inspect": "node benchmark/scripts/inspect-wiki-data.js --input=benchmark/data/wiki-normalized.json",
+    "bench:wiki:inspect:small": "node benchmark/scripts/inspect-wiki-data.js --input=benchmark/data/wiki-normalized-small.json",
+
+    "seed:wiki-business-schema": "node benchmark/scripts/seed-wiki-business-schema.js",
+    "bench:wiki:pg-relational": "node benchmark/wiki-pg-relational-benchmark.js",
+    "bench:wiki:pg-jsonb": "node benchmark/wiki-pg-jsonb-benchmark.js",
+    "bench:wiki:mongo": "node benchmark/wiki-mongo-benchmark.js",
+    "bench:wiki:rootid": "node benchmark/wiki-rootid-benchmark.js",
+    "bench:wiki": "node benchmark/wiki-rootid-benchmark.js",
+    "bench:wiki:all": "npm run bench:wiki:pg-relational && npm run bench:wiki:pg-jsonb && npm run bench:wiki:mongo && npm run bench:wiki:rootid",
+    "bench:wiki:report": "node benchmark/wiki-compare-report.js",
+    "bench:wiki:small": "npm run bench:wiki:pg-relational && npm run bench:wiki:pg-jsonb && npm run bench:wiki:mongo && npm run bench:wiki:rootid && npm run bench:wiki:report"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -22,6 +41,7 @@
     "express": "^4.21.2",
     "express-rate-limit": "^8.5.2",
     "helmet": "^8.1.0",
+    "mongodb": "^7.2.0",
     "pg": "^8.13.1",
     "sanitize-html": "^2.14.0",
     "uuid": "^11.0.5"

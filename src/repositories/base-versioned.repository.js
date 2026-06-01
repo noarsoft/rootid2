@@ -62,6 +62,8 @@ const COMMON_ALLOWED_COLUMN_FILTERS = new Set([
   "_prev_id",
   "_flag",
   "name",
+  "user_id",
+  "share_mode",
   "data_schema_id",
   "data_schema_rootid",
   "business_id",

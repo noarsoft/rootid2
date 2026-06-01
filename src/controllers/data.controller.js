@@ -13,7 +13,9 @@ function createDataController(db) {
   return {
     async create(req, res, next) {
       try {
-        const result = await dataService.createData(req.body);
+        const result = await dataService.createData(req.body, {
+          auth: req.auth,
+        });
 
         return res.status(201).json({
           ok: true,
@@ -28,7 +30,9 @@ function createDataController(db) {
       try {
         const { rootid } = req.params;
 
-        const result = await dataService.updateData(rootid, req.body);
+        const result = await dataService.updateData(rootid, req.body, {
+          auth: req.auth,
+        });
 
         return res.json({
           ok: true,
@@ -43,7 +47,9 @@ function createDataController(db) {
       try {
         const { id } = req.params;
 
-        const result = await dataService.getDataById(id);
+        const result = await dataService.getDataById(id, {
+          auth: req.auth,
+        });
 
         return res.json({
           ok: true,
@@ -58,7 +64,9 @@ function createDataController(db) {
       try {
         const { id } = req.params;
 
-        const result = await dataService.getDataEditContext(id);
+        const result = await dataService.getDataEditContext(id, {
+          auth: req.auth,
+        });
 
         return res.json({
           ok: true,
@@ -75,6 +83,7 @@ function createDataController(db) {
 
         const result = await dataService.getLatestDataByRootId(rootid, {
           includeDeleted: normalizeBool(req.query.includeDeleted),
+          auth: req.auth,
         });
 
         return res.json({
@@ -92,6 +101,7 @@ function createDataController(db) {
           ...getListOptions(req.query),
           data_schema_id: req.query.data_schema_id,
           data_schema_rootid: req.query.data_schema_rootid,
+          auth: req.auth,
         });
 
         return res.json({
@@ -109,7 +119,10 @@ function createDataController(db) {
 
         const result = await dataService.listLatestDataBySchemaId(
           schemaId,
-          getListOptions(req.query)
+          {
+            ...getListOptions(req.query),
+            auth: req.auth,
+          }
         );
 
         return res.json({
@@ -127,7 +140,10 @@ function createDataController(db) {
 
         const result = await dataService.listLatestDataBySchemaRootId(
           schemaRootId,
-          getListOptions(req.query)
+          {
+            ...getListOptions(req.query),
+            auth: req.auth,
+          }
         );
 
         return res.json({
@@ -145,7 +161,10 @@ function createDataController(db) {
 
         const result = await dataService.getDataHistory(
           rootid,
-          getHistoryOptions(req.query)
+          {
+            ...getHistoryOptions(req.query),
+            auth: req.auth,
+          }
         );
 
         return res.json({
@@ -161,7 +180,9 @@ function createDataController(db) {
       try {
         const { rootid } = req.params;
 
-        const result = await dataService.deleteData(rootid);
+        const result = await dataService.deleteData(rootid, {
+          auth: req.auth,
+        });
 
         return res.json({
           ok: true,
@@ -176,7 +197,9 @@ function createDataController(db) {
       try {
         const { id } = req.params;
 
-        const result = await dataService.restoreData(id);
+        const result = await dataService.restoreData(id, {
+          auth: req.auth,
+        });
 
         return res.json({
           ok: true,
@@ -191,7 +214,9 @@ function createDataController(db) {
       try {
         const { id } = req.params;
 
-        const result = await dataService.compareDataWithLatestSchema(id);
+        const result = await dataService.compareDataWithLatestSchema(id, {
+          auth: req.auth,
+        });
 
         return res.json({
           ok: true,
@@ -208,6 +233,7 @@ function createDataController(db) {
 
         const result = await dataService.migrateDataToLatestSchema(rootid, {
           force: req.body.force === true,
+          auth: req.auth,
         });
 
         return res.json({
@@ -228,6 +254,7 @@ function createDataController(db) {
           req.body,
           {
             force: req.body.force === true,
+            auth: req.auth,
           }
         );
 

@@ -17,11 +17,6 @@
 -- 4. form
 -- 5. tableview
 --
--- Benchmark baseline tables:
--- 1. bench_wiki_page
--- 2. bench_wiki_revision
--- 3. bench_wiki_jsonb
---
 -- หมายเหตุ:
 -- - _modify_datetime ใช้รูปแบบ YYYYMMDDHHMMSS เป็น BIGINT
 --   เช่น 20260514083045
@@ -34,180 +29,71 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 
+
 -- =====================================================
 -- baseline tables for benchmarking
 -- =====================================================
---
--- สำคัญ:
--- - baseline tables ใช้ run_id เพื่อให้รัน benchmark หลายรอบได้
--- - benchmark scripts ใช้ unique key แบบ:
---   - bench_wiki_page:     UNIQUE (run_id, page_id)
---   - bench_wiki_revision: UNIQUE (run_id, page_id, revision_id)
---   - bench_wiki_jsonb:    UNIQUE (run_id, page_id, revision_id)
---
--- ถ้า table เก่าเคยถูกสร้างแบบไม่มี run_id มาก่อน
--- ALTER TABLE ด้านล่างจะช่วยเพิ่ม run_id ให้
--- และ drop unique constraint เก่าแล้วสร้างใหม่
--- =====================================================
 
+DROP TABLE IF EXISTS bench_wiki_jsonb CASCADE;
+DROP TABLE IF EXISTS bench_wiki_revision CASCADE;
+DROP TABLE IF EXISTS bench_wiki_page CASCADE;
 
--- =====================================================
--- PG Relational baseline: page table
--- =====================================================
-
+-- PG Relational baseline
 CREATE TABLE IF NOT EXISTS bench_wiki_page (
   id BIGSERIAL PRIMARY KEY,
-
-  run_id TEXT NOT NULL DEFAULT 'default',
-
-  page_id BIGINT NOT NULL,
-  page_title TEXT NULL,
-
-  category_id TEXT NULL,
-  category_title TEXT NULL,
-
+  page_id BIGINT NOT NULL UNIQUE,
+  page_title TEXT,
+  category_id TEXT,
+  category_title TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
-ALTER TABLE IF EXISTS bench_wiki_page
-  ADD COLUMN IF NOT EXISTS run_id TEXT NOT NULL DEFAULT 'default';
-
-ALTER TABLE IF EXISTS bench_wiki_page
-  ADD COLUMN IF NOT EXISTS page_title TEXT NULL;
-
-ALTER TABLE IF EXISTS bench_wiki_page
-  ADD COLUMN IF NOT EXISTS category_id TEXT NULL;
-
-ALTER TABLE IF EXISTS bench_wiki_page
-  ADD COLUMN IF NOT EXISTS category_title TEXT NULL;
-
-ALTER TABLE IF EXISTS bench_wiki_page
-  DROP CONSTRAINT IF EXISTS bench_wiki_page_page_id_key;
-
-ALTER TABLE IF EXISTS bench_wiki_page
-  DROP CONSTRAINT IF EXISTS bench_wiki_page_unique;
-
-ALTER TABLE IF EXISTS bench_wiki_page
-  ADD CONSTRAINT bench_wiki_page_unique
-  UNIQUE (run_id, page_id);
-
-CREATE INDEX IF NOT EXISTS idx_bench_wiki_page_run_id
-  ON bench_wiki_page (run_id);
-
-CREATE INDEX IF NOT EXISTS idx_bench_wiki_page_page_id
-  ON bench_wiki_page (page_id);
-
-CREATE INDEX IF NOT EXISTS idx_bench_wiki_page_run_page
-  ON bench_wiki_page (run_id, page_id);
-
-
--- =====================================================
--- PG Relational baseline: revision table
--- =====================================================
 
 CREATE TABLE IF NOT EXISTS bench_wiki_revision (
   id BIGSERIAL PRIMARY KEY,
-
-  run_id TEXT NOT NULL DEFAULT 'default',
-
-  category_id TEXT NULL,
-  category_title TEXT NULL,
-
   page_id BIGINT NOT NULL,
-  page_title TEXT NULL,
-
   revision_id BIGINT NOT NULL,
   revision_timestamp TIMESTAMPTZ NULL,
-  revision_user TEXT NULL,
-  revision_comment TEXT NULL,
-  revision_size BIGINT NULL,
-  revision_sha1 TEXT NULL,
+  revision_user TEXT,
+  revision_comment TEXT,
+  revision_size BIGINT,
+  revision_sha1 TEXT,
+  text_hash TEXT,
+  text_size BIGINT,
+  source_index BIGINT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-  text_hash TEXT NULL,
-  text_size BIGINT NULL,
-  source_index BIGINT NULL,
-  revision_text TEXT NULL,
-
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  CONSTRAINT bench_wiki_revision_unique UNIQUE (page_id, revision_id)
 );
-
-ALTER TABLE IF EXISTS bench_wiki_revision
-  ADD COLUMN IF NOT EXISTS run_id TEXT NOT NULL DEFAULT 'default';
-
-ALTER TABLE IF EXISTS bench_wiki_revision
-  ADD COLUMN IF NOT EXISTS category_id TEXT NULL;
-
-ALTER TABLE IF EXISTS bench_wiki_revision
-  ADD COLUMN IF NOT EXISTS category_title TEXT NULL;
-
-ALTER TABLE IF EXISTS bench_wiki_revision
-  ADD COLUMN IF NOT EXISTS page_title TEXT NULL;
-
-ALTER TABLE IF EXISTS bench_wiki_revision
-  ADD COLUMN IF NOT EXISTS revision_text TEXT NULL;
-
-ALTER TABLE IF EXISTS bench_wiki_revision
-  DROP CONSTRAINT IF EXISTS bench_wiki_revision_unique;
-
-ALTER TABLE IF EXISTS bench_wiki_revision
-  ADD CONSTRAINT bench_wiki_revision_unique
-  UNIQUE (run_id, page_id, revision_id);
-
-CREATE INDEX IF NOT EXISTS idx_bench_wiki_revision_run_id
-  ON bench_wiki_revision (run_id);
 
 CREATE INDEX IF NOT EXISTS idx_bench_wiki_revision_page_id
   ON bench_wiki_revision (page_id);
 
 CREATE INDEX IF NOT EXISTS idx_bench_wiki_revision_latest
-  ON bench_wiki_revision (run_id, page_id, revision_timestamp DESC, revision_id DESC);
-
-CREATE INDEX IF NOT EXISTS idx_bench_wiki_revision_history
-  ON bench_wiki_revision (run_id, page_id, revision_timestamp ASC, revision_id ASC);
+  ON bench_wiki_revision (page_id, revision_timestamp DESC, revision_id DESC);
 
 
--- =====================================================
 -- PG JSONB baseline
--- =====================================================
-
 CREATE TABLE IF NOT EXISTS bench_wiki_jsonb (
   id BIGSERIAL PRIMARY KEY,
-
-  run_id TEXT NOT NULL DEFAULT 'default',
-
   page_id BIGINT NOT NULL,
   revision_id BIGINT NOT NULL,
   revision_timestamp TIMESTAMPTZ NULL,
-
   payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  CONSTRAINT bench_wiki_jsonb_unique UNIQUE (page_id, revision_id)
 );
-
-ALTER TABLE IF EXISTS bench_wiki_jsonb
-  ADD COLUMN IF NOT EXISTS run_id TEXT NOT NULL DEFAULT 'default';
-
-ALTER TABLE IF EXISTS bench_wiki_jsonb
-  DROP CONSTRAINT IF EXISTS bench_wiki_jsonb_unique;
-
-ALTER TABLE IF EXISTS bench_wiki_jsonb
-  ADD CONSTRAINT bench_wiki_jsonb_unique
-  UNIQUE (run_id, page_id, revision_id);
-
-CREATE INDEX IF NOT EXISTS idx_bench_wiki_jsonb_run_id
-  ON bench_wiki_jsonb (run_id);
 
 CREATE INDEX IF NOT EXISTS idx_bench_wiki_jsonb_page_id
   ON bench_wiki_jsonb (page_id);
 
 CREATE INDEX IF NOT EXISTS idx_bench_wiki_jsonb_latest
-  ON bench_wiki_jsonb (run_id, page_id, revision_timestamp DESC, revision_id DESC);
-
-CREATE INDEX IF NOT EXISTS idx_bench_wiki_jsonb_history
-  ON bench_wiki_jsonb (run_id, page_id, revision_timestamp ASC, revision_id ASC);
+  ON bench_wiki_jsonb (page_id, revision_timestamp DESC, revision_id DESC);
 
 CREATE INDEX IF NOT EXISTS idx_bench_wiki_jsonb_payload_gin
   ON bench_wiki_jsonb USING GIN (payload);
+
+
 
 
 -- =====================================================

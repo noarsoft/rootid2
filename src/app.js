@@ -19,6 +19,7 @@ function createApp() {
   const app = express();
 
   app.disable("x-powered-by");
+  app.set("trust proxy", config.app.trustProxy);
 
   app.use(helmet({
     contentSecurityPolicy: false,
@@ -27,7 +28,12 @@ function createApp() {
 
   app.use(
     cors({
-      origin: config.app.corsOrigin === "*" ? true : config.app.corsOrigin,
+      origin:
+        config.app.corsOrigin === "*"
+          ? true
+          : Array.isArray(config.app.corsOrigin)
+            ? config.app.corsOrigin
+            : config.app.corsOrigin,
       credentials: true,
     })
   );

@@ -12,6 +12,8 @@ const {
   mapPayloadToLatestSchema,
 } = require("../schema.service");
 
+const SchemaService = require("../schema.service");
+
 describe("schema.service (pure functions)", () => {
   describe("ALLOWED_FIELD_TYPES", () => {
     test("includes storage types", () => {
@@ -257,6 +259,22 @@ describe("schema.service (pure functions)", () => {
       const result = validatePayloadAgainstSchema(payload, schema, { allowExtraFields: true });
       expect(result.ok).toBe(true);
     });
+
+    test("string field ignores leftover enum metadata", () => {
+      const schema = { sex: { type: "string", enum: ["M", "F"] } };
+      const payload = { sex: "x" };
+      const result = validatePayloadAgainstSchema(payload, schema);
+      expect(result.ok).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    test("dropdown field still enforces enum values", () => {
+      const schema = { sex: { type: "dropdown", enum: ["M", "F"] } };
+      const payload = { sex: "x" };
+      const result = validatePayloadAgainstSchema(payload, schema);
+      expect(result.ok).toBe(false);
+      expect(result.errors.some(e => e.code === "INVALID_ENUM_VALUE")).toBe(true);
+    });
   });
 
   describe("mapPayloadToLatestSchema", () => {
@@ -283,6 +301,51 @@ describe("schema.service (pure functions)", () => {
       const payload = {};
       const result = mapPayloadToLatestSchema(payload, oldSchema, latestSchema);
       expect(result.warnings.some(w => w.status === FIELD_STATUS.MISSING_IN_OLD_SCHEMA)).toBe(true);
+    });
+  });
+
+  describe("SchemaService.updateSchema", () => {
+    test("updates schema without marking related data rows as history", async () => {
+      const db = {
+        query: jest.fn(async () => ({ rows: [] })),
+      };
+
+      const service = new SchemaService(db);
+
+      service.repo = {
+        getLatestOrThrow: jest.fn().mockResolvedValue({
+          id: 1,
+          _rootid: 100,
+          payload: { name: { type: "string" } },
+        }),
+        updateByRootId: jest.fn().mockResolvedValue({
+          id: 2,
+          _rootid: 100,
+          payload: { name: { type: "string" }, age: { type: "number" } },
+        }),
+      };
+
+      const markLatestSpy = jest.spyOn(
+        service,
+        "markLatestDataBySchemaIdAsUpdated"
+      );
+
+      const result = await service.updateSchema(100, {
+        payload: {
+          name: { type: "string" },
+          age: { type: "number" },
+        },
+      });
+
+      expect(service.repo.getLatestOrThrow).not.toHaveBeenCalled();
+      expect(service.repo.updateByRootId).toHaveBeenCalledWith(100, {
+        payload: {
+          name: { type: "string" },
+          age: { type: "number" },
+        },
+      });
+      expect(markLatestSpy).not.toHaveBeenCalled();
+      expect(result.id).toBe(2);
     });
   });
 });

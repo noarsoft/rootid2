@@ -7,6 +7,7 @@ const createSchemaRoute = require("./schema.route");
 const createDataRoute = require("./data.route");
 const createFormRoute = require("./form.route");
 const createViewRoute = require("./view.route");
+const createUploadRoute = require("./upload.route");
 const { requireAuth } = require("../middlewares/auth.middleware");
 
 function createRoutes(db) {
@@ -27,6 +28,7 @@ function createRoutes(db) {
   router.use("/data", createDataRoute(db));
   router.use("/form", createFormRoute(db));
   router.use("/view", createViewRoute(db));
+  router.use("/upload", createUploadRoute(db));
 
   return router;
 }

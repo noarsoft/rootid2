@@ -50,12 +50,13 @@ DB_NAME=rootidx
 DB_USER=postgres
 DB_PASSWORD=yourpassword
 PORT=3000
-CORS_ORIGIN=http://localhost:3002
+ CORS_ORIGIN=http://localhost:3002,https://app.aicamt.com,https://auth.aicamt.com
 AUTH_BASE_URL=http://localhost:3001
 AUTH_ME_URL=http://localhost:3001/api/auth/me
-AUTH_LOGIN_URL=http://localhost:3001/login.html
+AUTH_LOGIN_URL=http://localhost:3001/html/login.html
 AUTH_REDIRECT_PARAM=redirect
 AUTH_REQUEST_TIMEOUT_MS=5000
+TRUST_PROXY=1
 ```
 
 ## API Routes
