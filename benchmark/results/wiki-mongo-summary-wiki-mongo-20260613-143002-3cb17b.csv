@@ -1,0 +1,9 @@
+﻿name,ms,ok,deleted,rows,pages,revisions,categories,avg_revisions_per_page,revisions_per_sec,pages_per_sec,reads,avg_ms_per_read,reads_per_sec,avg_versions,avg_ms_per_history,history_reads_per_sec,min_revisions_per_page,max_revisions_per_page,model,documents,collection_name,collection_bytes,storage_size,total_index_size,run_id,mongo_db,mongo_collection,sample_reads,update_sample,delete_sample,history_limit,max_pages,include_text,batch_size,enable_mutation
+clear_run_before,2.2398,true,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+load_wiki_rows,14.7573,true,,3657,399,3656,58,9.1654,,,,,,,,,,,,,,,,,,,,,,,,,,,
+import_wiki_pages,274.7378,true,,,399,3656,,,13307.2333,1452.2938,,,,,,,,,,,,,,,,,,,,,,,,,
+sample_latest_reads,217.9128,true,,,,,,,,,200,1.0896,917.7983,,,,,,,,,,,,,,,,,,,,,,
+sample_history_reads,289.2184,true,,,,,,,,,200,,,9.235,1.4461,691.5189,,,,,,,,,,,,,,,,,,,
+wiki_input_summary,,,,3657,399,3656,58,9.1654,,,,,,,,,1,11,,,,,,,,,,,,,,,,,
+mongo_db_stats,,,,,399,3656,,,,,,,,,,,,,mongo,3656,bench_wiki_revision,43772046,13258752,7176192,,,,,,,,,,,
+benchmark_config,,,,,,,,,,,,,,,,,,,mongo,,,,,,wiki-mongo-20260613-143002-3cb17b,rootidx_benchmark,bench_wiki_revision,200,100,50,1000,,false,1000,false

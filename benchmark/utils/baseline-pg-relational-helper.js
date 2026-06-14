@@ -6,6 +6,10 @@
 // - 1 wiki page = 1 row ใน bench_wiki_page
 // - 1 wiki revision = 1 row ใน bench_wiki_revision
 // - ไม่มี _rootid / _prev_id / _flag
+//
+// Mutation helper:
+// - มีให้ใช้ได้ แต่ benchmark หลักจะปิดไว้ด้วย BENCH_PG_RELATIONAL_MUTATION=false
+// - เพื่อให้ PG Relational คงเป็น reference dataset สำหรับ correctness
 // -----------------------------------------------------------------------------
 
 const MODEL_NAME = "pg_relational";
@@ -106,7 +110,6 @@ function makeRevisionRow(runId, row, options = {}) {
     text_hash: normalizeText(row.text_hash),
     text_size: normalizeBigInt(row.text_size),
     source_index: normalizeBigInt(row.source_index),
-
     revision_text: revisionText,
   };
 }
@@ -115,29 +118,75 @@ async function ensurePgRelationalTables(db) {
   await db.query(`
     CREATE TABLE IF NOT EXISTS bench_wiki_page (
       id BIGSERIAL PRIMARY KEY,
-      run_id TEXT NOT NULL,
 
-      category_id TEXT NULL,
-      category_title TEXT NULL,
+      run_id TEXT NOT NULL DEFAULT 'default',
 
       page_id BIGINT NOT NULL,
       page_title TEXT NULL,
 
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      category_id TEXT NULL,
+      category_title TEXT NULL,
 
-      CONSTRAINT bench_wiki_page_unique
-        UNIQUE (run_id, page_id)
-    );
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
 
+  await db.query(`
+    ALTER TABLE IF EXISTS bench_wiki_page
+      ADD COLUMN IF NOT EXISTS run_id TEXT NOT NULL DEFAULT 'default'
+  `);
+
+  await db.query(`
+    ALTER TABLE IF EXISTS bench_wiki_page
+      ADD COLUMN IF NOT EXISTS page_title TEXT NULL
+  `);
+
+  await db.query(`
+    ALTER TABLE IF EXISTS bench_wiki_page
+      ADD COLUMN IF NOT EXISTS category_id TEXT NULL
+  `);
+
+  await db.query(`
+    ALTER TABLE IF EXISTS bench_wiki_page
+      ADD COLUMN IF NOT EXISTS category_title TEXT NULL
+  `);
+
+  await db.query(`
+    ALTER TABLE IF EXISTS bench_wiki_page
+      DROP CONSTRAINT IF EXISTS bench_wiki_page_page_id_key
+  `);
+
+  await db.query(`
+    ALTER TABLE IF EXISTS bench_wiki_page
+      DROP CONSTRAINT IF EXISTS bench_wiki_page_unique
+  `);
+
+  await db.query(`
+    ALTER TABLE IF EXISTS bench_wiki_page
+      ADD CONSTRAINT bench_wiki_page_unique
+      UNIQUE (run_id, page_id)
+  `);
+
+  await db.query(`
     CREATE INDEX IF NOT EXISTS idx_bench_wiki_page_run_id
-      ON bench_wiki_page (run_id);
+      ON bench_wiki_page (run_id)
+  `);
 
+  await db.query(`
     CREATE INDEX IF NOT EXISTS idx_bench_wiki_page_page_id
-      ON bench_wiki_page (page_id);
+      ON bench_wiki_page (page_id)
+  `);
 
+  await db.query(`
+    CREATE INDEX IF NOT EXISTS idx_bench_wiki_page_run_page
+      ON bench_wiki_page (run_id, page_id)
+  `);
+
+  await db.query(`
     CREATE TABLE IF NOT EXISTS bench_wiki_revision (
       id BIGSERIAL PRIMARY KEY,
-      run_id TEXT NOT NULL,
+
+      run_id TEXT NOT NULL DEFAULT 'default',
 
       category_id TEXT NULL,
       category_title TEXT NULL,
@@ -157,35 +206,85 @@ async function ensurePgRelationalTables(db) {
       source_index BIGINT NULL,
       revision_text TEXT NULL,
 
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
 
-      CONSTRAINT bench_wiki_revision_unique
-        UNIQUE (run_id, page_id, revision_id)
-    );
+  await db.query(`
+    ALTER TABLE IF EXISTS bench_wiki_revision
+      ADD COLUMN IF NOT EXISTS run_id TEXT NOT NULL DEFAULT 'default'
+  `);
 
+  await db.query(`
+    ALTER TABLE IF EXISTS bench_wiki_revision
+      ADD COLUMN IF NOT EXISTS category_id TEXT NULL
+  `);
+
+  await db.query(`
+    ALTER TABLE IF EXISTS bench_wiki_revision
+      ADD COLUMN IF NOT EXISTS category_title TEXT NULL
+  `);
+
+  await db.query(`
+    ALTER TABLE IF EXISTS bench_wiki_revision
+      ADD COLUMN IF NOT EXISTS page_title TEXT NULL
+  `);
+
+  await db.query(`
+    ALTER TABLE IF EXISTS bench_wiki_revision
+      ADD COLUMN IF NOT EXISTS revision_text TEXT NULL
+  `);
+
+  await db.query(`
+    ALTER TABLE IF EXISTS bench_wiki_revision
+      DROP CONSTRAINT IF EXISTS bench_wiki_revision_unique
+  `);
+
+  await db.query(`
+    ALTER TABLE IF EXISTS bench_wiki_revision
+      ADD CONSTRAINT bench_wiki_revision_unique
+      UNIQUE (run_id, page_id, revision_id)
+  `);
+
+  await db.query(`
     CREATE INDEX IF NOT EXISTS idx_bench_wiki_revision_run_id
-      ON bench_wiki_revision (run_id);
+      ON bench_wiki_revision (run_id)
+  `);
 
+  await db.query(`
     CREATE INDEX IF NOT EXISTS idx_bench_wiki_revision_page_id
-      ON bench_wiki_revision (page_id);
+      ON bench_wiki_revision (page_id)
+  `);
 
+  await db.query(`
     CREATE INDEX IF NOT EXISTS idx_bench_wiki_revision_latest
-      ON bench_wiki_revision (run_id, page_id, revision_timestamp DESC, revision_id DESC);
+      ON bench_wiki_revision (run_id, page_id, revision_timestamp DESC, revision_id DESC)
+  `);
 
+  await db.query(`
     CREATE INDEX IF NOT EXISTS idx_bench_wiki_revision_history
-      ON bench_wiki_revision (run_id, page_id, revision_timestamp ASC, revision_id ASC);
+      ON bench_wiki_revision (run_id, page_id, revision_timestamp ASC, revision_id ASC)
   `);
 }
 
 async function clearPgRelationalRunData(db, runId) {
-  await db.query("DELETE FROM bench_wiki_revision WHERE run_id = $1", [runId]);
-  await db.query("DELETE FROM bench_wiki_page WHERE run_id = $1", [runId]);
+  await db.query(
+    `
+      DELETE FROM bench_wiki_revision
+      WHERE run_id = $1
+    `,
+    [runId]
+  );
 
-  return {
-    model: MODEL_NAME,
-    run_id: runId,
-    cleared: true,
-  };
+  await db.query(
+    `
+      DELETE FROM bench_wiki_page
+      WHERE run_id = $1
+    `,
+    [runId]
+  );
+
+  return { runId };
 }
 
 async function insertOnePage(db, pageRow) {
@@ -264,60 +363,62 @@ async function insertOneRevision(db, revisionRow) {
 }
 
 async function importWikiPagesPgRelational(db, runId, pageMap, options = {}) {
-  const progressEvery = options.progressEvery || 100;
+  const imported = [];
   const pages = flattenPageMap(pageMap);
 
+  let pageCount = 0;
   let revisionCount = 0;
-  const imported = [];
 
-  await db.query("BEGIN");
+  for (const page of pages) {
+    const firstRow = page.rows[0];
 
-  try {
-    for (let i = 0; i < pages.length; i += 1) {
-      const page = pages[i];
-      const firstRow = page.rows[0];
+    if (!firstRow) continue;
 
-      await insertOnePage(db, makePageRow(runId, firstRow));
+    const pageRow = makePageRow(runId, firstRow);
+    await insertOnePage(db, pageRow);
 
-      for (const row of page.rows) {
-        const revisionRow = makeRevisionRow(runId, row, {
-          includeText: Boolean(options.includeText),
-        });
+    let revisionsForPage = 0;
 
-        await insertOneRevision(db, revisionRow);
-        revisionCount += 1;
-      }
-
-      imported.push({
-        page_id: page.page_id,
-        page_title: firstRow.page_title || "",
-        revisions: page.rows.length,
+    for (const row of page.rows) {
+      const revisionRow = makeRevisionRow(runId, row, {
+        includeText: options.includeText,
       });
 
-      if (progressEvery > 0 && (i + 1) % progressEvery === 0) {
-        console.log(`[${MODEL_NAME}] imported pages: ${i + 1}/${pages.length}`);
-      }
+      await insertOneRevision(db, revisionRow);
+
+      revisionsForPage += 1;
+      revisionCount += 1;
     }
 
-    await db.query("COMMIT");
-  } catch (err) {
-    await db.query("ROLLBACK");
-    throw err;
+    pageCount += 1;
+
+    imported.push({
+      page_id: pageRow.page_id,
+      page_title: pageRow.page_title,
+      revisions: revisionsForPage,
+    });
+
+    if (options.progressEvery && pageCount % options.progressEvery === 0) {
+      console.log(
+        `[pg-relational] imported pages=${pageCount}, revisions=${revisionCount}`
+      );
+    }
   }
 
   return {
-    model: MODEL_NAME,
-    pages: pages.length,
-    revisions: revisionCount,
     imported,
+    pages: pageCount,
+    revisions: revisionCount,
   };
 }
 
 async function sampleLatestReadsPgRelational(db, runId, importedPages, options = {}) {
-  const samples = pickSamples(importedPages, options.limit || 200);
+  const limit = Number(options.limit || process.env.BENCH_SAMPLE_READS || 200);
+  const sample = pickSamples(importedPages, limit);
+
   const latest = [];
 
-  for (const page of samples) {
+  for (const item of sample) {
     const result = await db.query(
       `
         SELECT *
@@ -327,54 +428,212 @@ async function sampleLatestReadsPgRelational(db, runId, importedPages, options =
         ORDER BY revision_timestamp DESC NULLS LAST, revision_id DESC
         LIMIT 1
       `,
-      [runId, page.page_id]
+      [runId, item.page_id]
     );
 
-    if (result.rows[0]) {
-      latest.push(result.rows[0]);
-    }
+    latest.push({
+      page_id: item.page_id,
+      page_title: item.page_title,
+      revision_id: result.rows[0]?.revision_id || null,
+      revision_timestamp: result.rows[0]?.revision_timestamp || null,
+    });
   }
 
   return {
-    model: MODEL_NAME,
-    reads: samples.length,
     latest,
+    reads: latest.length,
   };
 }
 
 async function sampleHistoryReadsPgRelational(db, runId, importedPages, options = {}) {
-  const samples = pickSamples(importedPages, options.limit || 200);
-  const historyLimit = options.historyLimit || 1000;
-  const histories = [];
-  let totalVersions = 0;
+  const limit = Number(options.limit || process.env.BENCH_SAMPLE_READS || 200);
+  const historyLimit = Number(options.historyLimit || process.env.BENCH_HISTORY_LIMIT || 1000);
+  const sample = pickSamples(importedPages, limit);
 
-  for (const page of samples) {
+  const histories = [];
+
+  for (const item of sample) {
     const result = await db.query(
       `
         SELECT *
         FROM bench_wiki_revision
         WHERE run_id = $1
           AND page_id = $2
-        ORDER BY revision_timestamp ASC NULLS LAST, revision_id ASC
+        ORDER BY revision_timestamp ASC NULLS FIRST, revision_id ASC
         LIMIT $3
       `,
-      [runId, page.page_id, historyLimit]
+      [runId, item.page_id, historyLimit]
     );
 
-    totalVersions += result.rows.length;
-
     histories.push({
-      page_id: page.page_id,
+      page_id: item.page_id,
+      page_title: item.page_title,
       versions: result.rows.length,
-      sample: result.rows.slice(0, 3),
     });
   }
 
   return {
-    model: MODEL_NAME,
-    reads: samples.length,
-    avg_versions: safeDiv(totalVersions, samples.length),
     histories,
+    reads: histories.length,
+    avg_versions:
+      histories.length > 0
+        ? histories.reduce((sum, item) => sum + item.versions, 0) / histories.length
+        : 0,
+  };
+}
+
+function makeSyntheticPgRevisionId(index = 0) {
+  return Date.now() * 1000 + Number(index || 0);
+}
+
+async function getLatestPgRelationalRevision(db, runId, pageId) {
+  const result = await db.query(
+    `
+      SELECT *
+      FROM bench_wiki_revision
+      WHERE run_id = $1
+        AND page_id = $2
+      ORDER BY revision_timestamp DESC NULLS LAST, revision_id DESC
+      LIMIT 1
+    `,
+    [runId, pageId]
+  );
+
+  return result.rows[0] || null;
+}
+
+async function sampleUpdatesPgRelational(db, runId, importedPages, options = {}) {
+  const limit = Number(options.limit || process.env.BENCH_UPDATE_SAMPLE || 100);
+  const sample = pickSamples(importedPages, limit);
+
+  const updated = [];
+
+  for (let i = 0; i < sample.length; i += 1) {
+    const item = sample[i];
+    const latest = await getLatestPgRelationalRevision(db, runId, item.page_id);
+
+    if (!latest) continue;
+
+    const revisionId = makeSyntheticPgRevisionId(i);
+    const revisionTimestamp = new Date().toISOString();
+
+    await insertOneRevision(db, {
+      run_id: runId,
+
+      category_id: latest.category_id,
+      category_title: latest.category_title,
+
+      page_id: latest.page_id,
+      page_title: latest.page_title,
+
+      revision_id: revisionId,
+      revision_timestamp: revisionTimestamp,
+      revision_user: "pg_relational_benchmark_update",
+      revision_comment: `Synthetic PG Relational benchmark update ${i + 1}`,
+      revision_size: latest.revision_size,
+      revision_sha1: `synthetic-pg-rel-update-${runId}-${i + 1}`,
+
+      text_hash: `synthetic-pg-rel-update-${runId}-${i + 1}`,
+      text_size: Number(latest.text_size || 0) + 1,
+      source_index: null,
+      revision_text: latest.revision_text,
+    });
+
+    updated.push({
+      page_id: item.page_id,
+      page_title: item.page_title,
+      before_revision_id: latest.revision_id,
+      after_revision_id: revisionId,
+    });
+  }
+
+  return {
+    updated,
+    updates: updated.length,
+  };
+}
+
+async function sampleLatestReadsAfterUpdatePgRelational(db, runId, importedPages, options = {}) {
+  return sampleLatestReadsPgRelational(db, runId, importedPages, options);
+}
+
+async function sampleHistoryReadsAfterUpdatePgRelational(db, runId, importedPages, options = {}) {
+  return sampleHistoryReadsPgRelational(db, runId, importedPages, options);
+}
+
+async function sampleDeletesPgRelational(db, runId, importedPages, options = {}) {
+  const limit = Number(options.limit || process.env.BENCH_DELETE_SAMPLE || 50);
+  const sample = pickSamples(importedPages, limit);
+
+  const deleted = [];
+
+  for (const item of sample) {
+    const latest = await getLatestPgRelationalRevision(db, runId, item.page_id);
+
+    if (!latest) continue;
+
+    await db.query(
+      `
+        DELETE FROM bench_wiki_revision
+        WHERE id = $1
+      `,
+      [latest.id]
+    );
+
+    deleted.push({
+      page_id: item.page_id,
+      page_title: item.page_title,
+      deleted_revision_id: latest.revision_id,
+    });
+  }
+
+  return {
+    deleted,
+    deletes: deleted.length,
+  };
+}
+
+async function sampleLatestReadsAfterDeletePgRelational(db, runId, importedPages, options = {}) {
+  return sampleLatestReadsPgRelational(db, runId, importedPages, options);
+}
+
+async function verifyDeletesPgRelational(db, runId, deletedItems) {
+  const verified = [];
+
+  let ok = 0;
+  let failed = 0;
+
+  for (const item of deletedItems || []) {
+    const result = await db.query(
+      `
+        SELECT COUNT(*)::INTEGER AS count
+        FROM bench_wiki_revision
+        WHERE run_id = $1
+          AND page_id = $2
+          AND revision_id = $3
+      `,
+      [runId, item.page_id, item.deleted_revision_id]
+    );
+
+    const count = result.rows[0]?.count || 0;
+    const isDeleted = count === 0;
+
+    if (isDeleted) ok += 1;
+    else failed += 1;
+
+    verified.push({
+      page_id: item.page_id,
+      page_title: item.page_title,
+      deleted_revision_id: item.deleted_revision_id,
+      ok: isDeleted,
+    });
+  }
+
+  return {
+    verified,
+    checks: verified.length,
+    ok,
+    failed,
   };
 }
 
@@ -382,9 +641,17 @@ async function getPgRelationalStats(db, runId) {
   const counts = await db.query(
     `
       SELECT
-        (SELECT COUNT(*)::BIGINT FROM bench_wiki_page WHERE run_id = $1) AS pages,
-        (SELECT COUNT(*)::BIGINT FROM bench_wiki_revision WHERE run_id = $1) AS revisions,
-        (SELECT COUNT(DISTINCT page_id)::BIGINT FROM bench_wiki_revision WHERE run_id = $1) AS page_ids
+        (SELECT COUNT(*)::INTEGER
+         FROM bench_wiki_page
+         WHERE run_id = $1) AS pages,
+
+        (SELECT COUNT(*)::INTEGER
+         FROM bench_wiki_revision
+         WHERE run_id = $1) AS revisions,
+
+        (SELECT COUNT(DISTINCT page_id)::INTEGER
+         FROM bench_wiki_revision
+         WHERE run_id = $1) AS page_ids
     `,
     [runId]
   );
@@ -419,5 +686,13 @@ module.exports = {
   importWikiPagesPgRelational,
   sampleLatestReadsPgRelational,
   sampleHistoryReadsPgRelational,
+
+  sampleUpdatesPgRelational,
+  sampleLatestReadsAfterUpdatePgRelational,
+  sampleHistoryReadsAfterUpdatePgRelational,
+  sampleDeletesPgRelational,
+  sampleLatestReadsAfterDeletePgRelational,
+  verifyDeletesPgRelational,
+
   getPgRelationalStats,
 };

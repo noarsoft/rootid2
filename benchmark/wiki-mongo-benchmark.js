@@ -2,15 +2,12 @@
 // -----------------------------------------------------------------------------
 // Wiki → MongoDB Document Baseline Benchmark
 //
-// Refactor version:
-// - ใช้ helper:
-//   - benchmark/utils/mongo-client.js
-//   - benchmark/utils/mongo-bench-helper.js
-// - ไฟล์นี้เหลือหน้าที่ orchestration:
-//   connect mongo → load wiki → run benchmark steps → write JSON/CSV
+// Default:
+// - MongoDB ไม่ mutate หลัง import
+// - ใช้เป็น baseline read/import/storage
 //
-// Required dependency:
-//   mongodb ^7.x ใช้ได้
+// Optional mutation:
+// - BENCH_MONGO_MUTATION=true
 // -----------------------------------------------------------------------------
 
 require("dotenv").config();
@@ -45,6 +42,12 @@ const {
   importWikiPagesMongo,
   sampleLatestReadsMongo,
   sampleHistoryReadsMongo,
+  sampleUpdatesMongo,
+  sampleLatestReadsAfterUpdateMongo,
+  sampleHistoryReadsAfterUpdateMongo,
+  sampleDeletesMongo,
+  sampleLatestReadsAfterDeleteMongo,
+  verifyDeletesMongo,
   getMongoStats,
 } = require("./utils/mongo-bench-helper");
 
@@ -100,11 +103,14 @@ function makeSummaryRows(metrics, stats, config, wikiSummary) {
       mongo_db: config.mongoDb,
       mongo_collection: config.mongoCollection,
       sample_reads: config.sampleReads,
+      update_sample: config.updateSample,
+      delete_sample: config.deleteSample,
       history_limit: config.historyLimit,
       max_pages: config.maxPages || "",
       max_revisions_per_page: config.maxRevisionsPerPage || "",
       include_text: config.includeText,
       batch_size: config.batchSize,
+      enable_mutation: config.enableMutation,
     },
   ];
 }
@@ -116,10 +122,15 @@ function makeConsoleRows(metrics) {
     rows: m.rows || "",
     pages: m.pages || "",
     revisions: m.revisions || "",
+    updates: m.updates || "",
+    deletes: m.deletes || "",
     reads: m.reads || "",
     avg_ms:
       m.avg_ms_per_read ||
       m.avg_ms_per_history ||
+      m.avg_ms_per_update ||
+      m.avg_ms_per_delete ||
+      m.avg_ms_per_check ||
       "",
   }));
 }
@@ -144,14 +155,19 @@ async function main() {
     maxRevisionsPerPage: getIntEnv("BENCH_MAX_REVISIONS_PER_PAGE", 0),
 
     sampleReads: getIntEnv("BENCH_SAMPLE_READS", 200),
+    updateSample: getIntEnv("BENCH_UPDATE_SAMPLE", 100),
+    deleteSample: getIntEnv("BENCH_DELETE_SAMPLE", 50),
     historyLimit: getIntEnv("BENCH_HISTORY_LIMIT", 1000),
-    progressEvery: getIntEnv("BENCH_PROGRESS_EVERY", 100),
 
+    progressEvery: getIntEnv("BENCH_PROGRESS_EVERY", 100),
     batchSize: getIntEnv("BENCH_MONGO_BATCH_SIZE", 1000),
 
     includeText: getBoolEnv("BENCH_INCLUDE_TEXT", false),
+
     clearRunBefore: getBoolEnv("BENCH_CLEAR_RUN_BEFORE", true),
     clearRunAfter: getBoolEnv("BENCH_CLEAR_RUN_AFTER", false),
+
+    enableMutation: getBoolEnv("BENCH_MONGO_MUTATION", false),
   };
 
   const metrics = [];
@@ -178,9 +194,9 @@ async function main() {
     dbName: config.mongoDb,
   });
 
-  const collection = getMongoWikiCollection(mongo.db, config.mongoCollection);
-
   try {
+    const collection = getMongoWikiCollection(mongo.db, config.mongoCollection);
+
     await ensureMongoWikiIndexes(collection);
 
     if (config.clearRunBefore) {
@@ -188,7 +204,10 @@ async function main() {
         return clearMongoRunData(collection, runId);
       });
 
-      metrics.push(clearBefore.metric);
+      metrics.push({
+        ...clearBefore.metric,
+        deleted: clearBefore.result.deletedCount,
+      });
     }
 
     const loadWiki = await measure("load_wiki_rows", async () => {
@@ -225,8 +244,12 @@ async function main() {
       ...importWiki.metric,
       pages: importWiki.result.pages,
       revisions: importWiki.result.revisions,
-      revisions_per_sec: round(safeDiv(importWiki.result.revisions, importWiki.metric.ms / 1000)),
-      pages_per_sec: round(safeDiv(importWiki.result.pages, importWiki.metric.ms / 1000)),
+      revisions_per_sec: round(
+        safeDiv(importWiki.result.revisions, importWiki.metric.ms / 1000)
+      ),
+      pages_per_sec: round(
+        safeDiv(importWiki.result.pages, importWiki.metric.ms / 1000)
+      ),
     });
 
     const importedPages = importWiki.result.imported;
@@ -241,7 +264,9 @@ async function main() {
       ...latestReads.metric,
       reads: latestReads.result.reads,
       avg_ms_per_read: round(safeDiv(latestReads.metric.ms, latestReads.result.reads)),
-      reads_per_sec: round(safeDiv(latestReads.result.reads, latestReads.metric.ms / 1000)),
+      reads_per_sec: round(
+        safeDiv(latestReads.result.reads, latestReads.metric.ms / 1000)
+      ),
     });
 
     const historyReads = await measure("sample_history_reads", async () => {
@@ -255,9 +280,144 @@ async function main() {
       ...historyReads.metric,
       reads: historyReads.result.reads,
       avg_versions: round(historyReads.result.avg_versions),
-      avg_ms_per_history: round(safeDiv(historyReads.metric.ms, historyReads.result.reads)),
-      history_reads_per_sec: round(safeDiv(historyReads.result.reads, historyReads.metric.ms / 1000)),
+      avg_ms_per_history: round(
+        safeDiv(historyReads.metric.ms, historyReads.result.reads)
+      ),
+      history_reads_per_sec: round(
+        safeDiv(historyReads.result.reads, historyReads.metric.ms / 1000)
+      ),
     });
+
+    let updateSample = null;
+    let latestReadsAfterUpdate = null;
+    let historyReadsAfterUpdate = null;
+    let deleteSample = null;
+    let latestReadsAfterDelete = null;
+    let deleteVerification = null;
+
+    if (config.enableMutation) {
+      updateSample = await measure("sample_version_updates", async () => {
+        return sampleUpdatesMongo(collection, runId, importedPages, {
+          limit: config.updateSample,
+        });
+      });
+
+      metrics.push({
+        ...updateSample.metric,
+        updates: updateSample.result.updates,
+        avg_ms_per_update: round(
+          safeDiv(updateSample.metric.ms, updateSample.result.updates)
+        ),
+        updates_per_sec: round(
+          safeDiv(updateSample.result.updates, updateSample.metric.ms / 1000)
+        ),
+      });
+
+      latestReadsAfterUpdate = await measure(
+        "sample_latest_reads_after_update",
+        async () => {
+          return sampleLatestReadsAfterUpdateMongo(collection, runId, importedPages, {
+            limit: config.sampleReads,
+          });
+        }
+      );
+
+      metrics.push({
+        ...latestReadsAfterUpdate.metric,
+        reads: latestReadsAfterUpdate.result.reads,
+        avg_ms_per_read: round(
+          safeDiv(latestReadsAfterUpdate.metric.ms, latestReadsAfterUpdate.result.reads)
+        ),
+        reads_per_sec: round(
+          safeDiv(
+            latestReadsAfterUpdate.result.reads,
+            latestReadsAfterUpdate.metric.ms / 1000
+          )
+        ),
+      });
+
+      historyReadsAfterUpdate = await measure(
+        "sample_history_reads_after_update",
+        async () => {
+          return sampleHistoryReadsAfterUpdateMongo(collection, runId, importedPages, {
+            limit: config.sampleReads,
+            historyLimit: config.historyLimit,
+          });
+        }
+      );
+
+      metrics.push({
+        ...historyReadsAfterUpdate.metric,
+        reads: historyReadsAfterUpdate.result.reads,
+        avg_versions: round(historyReadsAfterUpdate.result.avg_versions),
+        avg_ms_per_history: round(
+          safeDiv(historyReadsAfterUpdate.metric.ms, historyReadsAfterUpdate.result.reads)
+        ),
+        history_reads_per_sec: round(
+          safeDiv(
+            historyReadsAfterUpdate.result.reads,
+            historyReadsAfterUpdate.metric.ms / 1000
+          )
+        ),
+      });
+
+      deleteSample = await measure("sample_deletes", async () => {
+        return sampleDeletesMongo(collection, runId, importedPages, {
+          limit: config.deleteSample,
+        });
+      });
+
+      metrics.push({
+        ...deleteSample.metric,
+        deletes: deleteSample.result.deletes,
+        avg_ms_per_delete: round(
+          safeDiv(deleteSample.metric.ms, deleteSample.result.deletes)
+        ),
+        deletes_per_sec: round(
+          safeDiv(deleteSample.result.deletes, deleteSample.metric.ms / 1000)
+        ),
+      });
+
+      latestReadsAfterDelete = await measure(
+        "sample_latest_reads_after_delete",
+        async () => {
+          return sampleLatestReadsAfterDeleteMongo(collection, runId, importedPages, {
+            limit: config.deleteSample,
+          });
+        }
+      );
+
+      metrics.push({
+        ...latestReadsAfterDelete.metric,
+        reads: latestReadsAfterDelete.result.reads,
+        avg_ms_per_read: round(
+          safeDiv(latestReadsAfterDelete.metric.ms, latestReadsAfterDelete.result.reads)
+        ),
+        reads_per_sec: round(
+          safeDiv(
+            latestReadsAfterDelete.result.reads,
+            latestReadsAfterDelete.metric.ms / 1000
+          )
+        ),
+      });
+
+      deleteVerification = await measure("verify_deletes", async () => {
+        return verifyDeletesMongo(collection, runId, deleteSample.result.deleted);
+      });
+
+      metrics.push({
+        ...deleteVerification.metric,
+        checks: deleteVerification.result.checks,
+        ok: deleteVerification.result.ok,
+        failed: deleteVerification.result.failed,
+        avg_ms_per_check: round(
+          safeDiv(deleteVerification.metric.ms, deleteVerification.result.checks)
+        ),
+        checks_per_sec: round(
+          safeDiv(deleteVerification.result.checks, deleteVerification.metric.ms / 1000)
+        ),
+      });
+    }
 
     const stats = await getMongoStats(mongo.db, collection, runId);
 
@@ -285,6 +445,18 @@ async function main() {
       samples: {
         latest: latestReads.result.latest.slice(0, 10),
         history: historyReads.result.histories.slice(0, 10),
+
+        updates: updateSample?.result?.updated?.slice(0, 10) || [],
+        latest_after_update:
+          latestReadsAfterUpdate?.result?.latest?.slice(0, 10) || [],
+        history_after_update:
+          historyReadsAfterUpdate?.result?.histories?.slice(0, 10) || [],
+
+        deletes: deleteSample?.result?.deleted?.slice(0, 10) || [],
+        latest_after_delete:
+          latestReadsAfterDelete?.result?.latest?.slice(0, 10) || [],
+        delete_verification:
+          deleteVerification?.result?.verified?.slice(0, 10) || [],
       },
     };
 

@@ -1,0 +1,400 @@
+﻿page_id,page_title,rootid,first_id,latest_id,latest_id_after_update,delete_marker_id,revisions,updates,updated_in_benchmark,deleted_in_benchmark
+569,Anthropology,18953,18953,18962,22610,22710,10,9,true,true
+593,Animation,18963,18963,18972,22611,22711,10,9,true,true
+1164,Artificial intelligence,18973,18973,18982,22612,22712,10,9,true,true
+1198,Acoustics,18983,18983,18992,22613,22713,10,9,true,true
+1634,Aquaculture,18993,18993,19002,22614,22714,10,9,true,true
+2130,Aesthetics,19003,19003,19012,22615,22715,10,9,true,true
+2408,Analytical chemistry,19013,19013,19022,22616,22716,10,9,true,true
+2593,Accounting,19023,19023,19032,22617,22717,10,9,true,true
+2861,Advertising,19033,19033,19042,22618,22718,10,9,true,true
+3954,Biochemistry,19043,19043,19052,22619,22719,10,9,true,true
+4214,Bioinformatics,19053,19053,19062,22620,22720,10,9,true,true
+4502,Biotechnology,19063,19063,19072,22621,22721,10,9,true,true
+4650,Black hole,19073,19073,19082,22622,22722,10,9,true,true
+4770,Business ethics,19083,19083,19092,22623,22723,10,9,true,true
+5176,Calculus,19093,19093,19102,22624,22724,10,9,true,true
+5178,Classics,19103,19103,19112,22625,22725,10,9,true,true
+5180,Chemistry,19113,19113,19122,22626,22726,10,9,true,true
+5320,Carbon nanotube,19123,19123,19132,22627,22727,10,9,true,true
+5387,Condensed matter physics,19133,19133,19142,22628,22728,10,9,true,true
+5388,Cultural anthropology,19143,19143,19152,22629,22729,10,9,true,true
+5762,Civil engineering,19153,19153,19162,22630,22730,10,9,true,true
+5919,Constitutional law,19163,19163,19163,22631,22731,1,0,true,true
+5961,Cognitive psychology,19164,19164,19164,22632,22732,1,0,true,true
+6038,Chemical engineering,19165,19165,19174,22633,22733,10,9,true,true
+6910,Cloning,19175,19175,19184,22634,22734,10,9,true,true
+7885,Dance,19185,19185,19194,22635,22735,10,9,true,true
+7955,DNA,19195,19195,19204,22636,22736,10,9,true,true
+7959,Democracy,19205,19205,19214,22637,22737,10,9,true,true
+8088,Documentary film,19215,19215,19224,22638,22738,10,9,true,true
+8103,Deforestation,19225,19225,19234,22639,22739,10,9,true,true
+8311,Dinosaur,19235,19235,19244,22640,22740,10,9,true,true
+8651,Dark matter,19245,19245,19254,22641,22741,10,9,true,true
+9014,Developmental psychology,19255,19255,19255,22642,22742,1,0,true,true
+9032,Drosophila,19256,19256,19265,22643,22743,10,9,true,true
+9223,Economics,19266,19266,19275,22644,22744,10,9,true,true
+9247,Epistemology,19276,19276,19276,22645,22745,1,0,true,true
+9258,Ethics,19277,19277,19277,22646,22746,1,0,true,true
+9425,Ethology,19278,19278,19287,22647,22747,10,9,true,true
+9531,Electrical engineering,19288,19288,19297,22648,22748,10,9,true,true
+9532,Electromagnetism,19298,19298,19307,22649,22749,10,9,true,true
+9632,Ecosystem,19308,19308,19317,22650,22750,10,9,true,true
+9649,Energy,19318,19318,19327,22651,22751,10,9,true,true
+9763,Exoplanet,19328,19328,19337,22652,22752,10,9,true,true
+10109,Esotericism,19338,19338,19347,22653,22753,10,9,true,true
+10326,Human evolution,19348,19348,19357,22654,22754,10,9,true,true
+10332,Educational psychology,19358,19358,19358,22655,22755,1,0,true,true
+10390,Econometrics,19359,19359,19368,22656,22756,10,9,true,true
+10799,Film theory,19369,19369,19378,22657,22757,10,9,true,true
+10958,Fossil,19379,19379,19388,22658,22758,10,9,true,true
+11162,Finance,19389,19389,19398,22659,22759,10,9,true,true
+11185,Feminism,19399,19399,19408,22660,,10,9,true,false
+11298,Feudalism,19409,19409,19418,22661,,10,9,true,false
+11657,Fashion,19419,19419,19428,22662,,10,9,true,false
+12207,Geology,19429,19429,19438,22663,,10,9,true,false
+12266,Genetics,19439,19439,19448,22664,,10,9,true,false
+12383,Genetic engineering,19449,19449,19458,22665,,10,9,true,false
+12401,Graph theory,19459,19459,19468,22666,,10,9,true,false
+12558,Galaxy,19469,19469,19478,22667,,10,9,true,false
+12799,Graphic design,19479,19479,19488,22668,,10,9,true,false
+12967,Geologic time scale,19489,19489,19498,22669,,10,9,true,false
+13276,Historiography,19499,19499,19499,22670,,1,0,true,false
+13372,Human geography,19500,19500,19509,22671,,10,9,true,false
+13435,Hydrology,19510,19510,19519,22672,,10,9,true,false
+14567,International trade,19520,19520,19529,22673,,10,9,true,false
+14624,Inorganic chemistry,19530,19530,19539,22674,,10,9,true,false
+14914,Industrial Revolution,19540,19540,19549,22675,,10,9,true,false
+14959,Immunology,19550,19550,19559,22676,,10,9,true,false
+15223,Invertebrate,19560,19560,19569,22677,,10,9,true,false
+15271,Information retrieval,19570,19570,19579,22678,,10,9,true,false
+15928,Journalism,19580,19580,19589,22679,,10,9,true,false
+17730,Latin,19590,19590,19599,22680,,10,9,true,false
+18422,Linear algebra,19600,19600,19609,22681,,10,9,true,false
+18819,Microeconomics,19610,19610,19619,22682,,10,9,true,false
+18820,Macroeconomics,19620,19620,19629,22683,,10,9,true,false
+18831,Mathematics,19630,19630,19639,22684,,10,9,true,false
+18895,Metaphysics,19640,19640,19640,22685,,1,0,true,false
+18957,Medicine,19641,19641,19650,22686,,10,9,true,false
+19528,Mechanical engineering,19651,19651,19660,22687,,10,9,true,false
+19552,Media studies,19661,19661,19670,22688,,10,9,true,false
+19622,Materials science,19671,19671,19680,22689,,10,9,true,false
+19685,Mythology,19681,19681,19690,22690,,10,9,true,false
+19881,Management,19691,19691,19700,22691,,10,9,true,false
+19883,Mineralogy,19701,19701,19710,22692,,10,9,true,false
+20021,Marine biology,19711,19711,19720,22693,,10,9,true,false
+20458,Musicology,19721,19721,19730,22694,,10,9,true,false
+20874,Mycology,19731,19731,19740,22695,,10,9,true,false
+21245,Neuroscience,19741,19741,19741,22696,,1,0,true,false
+21285,Nuclear physics,19742,19742,19751,22697,,10,9,true,false
+21488,Nanotechnology,19752,19752,19761,22698,,10,9,true,false
+21514,Nanomedicine,19762,19762,19771,22699,,10,9,true,false
+21525,Nutrition,19772,19772,19781,22700,,10,9,true,false
+21527,Number theory,19782,19782,19791,22701,,10,9,true,false
+21652,Natural language processing,19792,19792,19801,22702,,10,9,true,false
+22208,Organic chemistry,19802,19802,19811,22703,,10,9,true,false
+22348,Opera,19812,19812,19821,22704,,10,9,true,false
+22483,Optics,19822,19822,19831,22705,,10,9,true,false
+22921,Psychology,19832,19832,19832,22706,,1,0,true,false
+22926,Poetry,19833,19833,19842,22707,,10,9,true,false
+22938,Performing arts,19843,19843,19852,22708,,10,9,true,false
+22939,Physics,19853,19853,19862,22709,,10,9,true,false
+23084,Paleontology,19863,19863,19872,,,10,9,false,false
+23194,Phonetics,19873,19873,19873,,,1,0,false,false
+23259,Particle physics,19874,19874,19883,,,10,9,false,false
+23542,Probability theory,19884,19884,19893,,,10,9,false,false
+23635,Physical chemistry,19894,19894,19903,,,10,9,false,false
+24042,Project management,19904,19904,19913,,,10,9,false,false
+24130,Energy storage,19914,19914,19923,,,10,9,false,false
+24232,Biological anthropology,19924,19924,19933,,,10,9,false,false
+24354,Pharmacology,19934,19934,19943,,,10,9,false,false
+24388,Political science,19944,19944,19953,,,10,9,false,false
+24389,Public relations,19954,19954,19963,,,10,9,false,false
+24544,Photosynthesis,19964,19964,19973,,,10,9,false,false
+24944,Plate tectonics,19974,19974,19983,,,10,9,false,false
+25011,Plankton,19984,19984,19993,,,10,9,false,false
+25202,Quantum mechanics,19994,19994,20003,,,10,9,false,false
+25715,Rail transport,20004,20004,20013,,,10,9,false,false
+25784,Renewable energy,20014,20014,20023,,,10,9,false,false
+26188,Relativity,20024,20024,20033,,,10,9,false,false
+26685,Statistics,20034,20034,20043,,,10,9,false,false
+26833,Scientific method,20044,20044,20053,,,10,9,false,false
+26860,Syntax,20054,20054,20054,,,1,0,false,false
+26990,Social psychology,20055,20055,20055,,,1,0,false,false
+27113,Secularism,20056,20056,20065,,,10,9,false,false
+27783,Stem cell,20066,20066,20075,,,10,9,false,false
+27995,Supply chain management,20076,20076,20085,,,10,9,false,false
+28769,Maritime transport,20086,20086,20095,,,10,9,false,false
+28935,Seismology,20096,20096,20105,,,10,9,false,false
+29107,Semantics,20106,20106,20106,,,1,0,false,false
+29501,Sustainable development,20107,20107,20116,,,10,9,false,false
+29789,Tourism,20117,20117,20126,,,10,9,false,false
+29952,Thermodynamics,20127,20127,20136,,,10,9,false,false
+29954,Topology,20137,20137,20146,,,10,9,false,false
+30369,Thermochemistry,20147,20147,20156,,,10,9,false,false
+30503,Theology,20157,20157,20166,,,10,9,false,false
+32573,Victimology,20167,20167,20176,,,10,9,false,false
+32654,Veterinary medicine,20177,20177,20186,,,10,9,false,false
+32772,Virology,20187,20187,20196,,,10,9,false,false
+34413,Zoology,20197,20197,20206,,,10,9,false,false
+34439,Zoonosis,20207,20207,20216,,,10,9,false,false
+37138,Arabidopsis thaliana,20217,20217,20226,,,10,9,false,false
+40258,Harmony,20227,20227,20236,,,10,9,false,false
+41916,Financial market,20237,20237,20246,,,10,9,false,false
+42253,Data mining,20247,20247,20256,,,10,9,false,false
+42405,Ichthyology,20257,20257,20266,,,10,9,false,false
+42967,Ornithology,20267,20267,20276,,,10,9,false,false
+43094,Gender role,20277,20277,20286,,,10,9,false,false
+43948,Star formation,20287,20287,20296,,,10,9,false,false
+44044,Oceanography,20297,20297,20306,,,10,9,false,false
+44816,Pragmatics,20307,20307,20307,,,1,0,false,false
+45086,Biodiversity,20308,20308,20317,,,10,9,false,false
+45642,Demography,20318,20318,20327,,,10,9,false,false
+45710,Forensic science,20328,20328,20337,,,10,9,false,false
+47503,Carbon cycle,20338,20338,20347,,,10,9,false,false
+48791,Pathology,20348,20348,20357,,,10,9,false,false
+48852,Market economy,20358,20358,20367,,,10,9,false,false
+49033,Epigenetics,20368,20368,20377,,,10,9,false,false
+49681,Ontology (information science),20378,20378,20387,,,10,9,false,false
+50650,Astronomy,20388,20388,20397,,,10,9,false,false
+51119,Literary theory,20398,20398,20407,,,10,9,false,false
+51320,Ancient history,20408,20408,20408,,,1,0,false,false
+53307,Lepidoptera,20409,20409,20418,,,10,9,false,false
+53723,Digital media,20419,20419,20428,,,10,9,false,false
+53912,Forestry,20429,20429,20438,,,10,9,false,false
+54783,Music theory,20439,20439,20448,,,10,9,false,false
+55170,Genomics,20449,20449,20458,,,10,9,false,false
+56358,Mangifera,20459,20459,20468,,,10,9,false,false
+57893,Ficus,20469,20469,20478,,,10,9,false,false
+58422,Aviation,20479,20479,20488,,,10,9,false,false
+58475,Bacteriology,20489,20489,20498,,,10,9,false,false
+58849,Gender studies,20499,20499,20508,,,10,9,false,false
+59252,Marketing,20509,20509,20518,,,10,9,false,false
+59413,Soil science,20519,20519,20528,,,10,9,false,false
+59976,Diptera,20529,20529,20538,,,10,9,false,false
+60257,Marine mammal,20539,20539,20548,,,10,9,false,false
+60981,Military tactics,20549,20549,20558,,,10,9,false,false
+63121,Investment,20559,20559,20568,,,10,9,false,false
+63380,Contemporary art,20569,20569,20578,,,10,9,false,false
+66540,Ancient Greece,20579,20579,20588,,,10,9,false,false
+66997,Epidemiology,20589,20589,20598,,,10,9,false,false
+75286,Landscape architecture,20599,20599,20608,,,10,9,false,false
+77547,Logistics,20609,20609,20618,,,10,9,false,false
+78534,Geomorphology,20619,20619,20628,,,10,9,false,false
+79675,Ecotourism,20629,20629,20638,,,10,9,false,false
+80077,Ethnomusicology,20639,20639,20648,,,10,9,false,false
+82533,International relations,20649,20649,20658,,,10,9,false,false
+86586,Military science,20659,20659,20668,,,10,9,false,false
+87410,Coral reef,20669,20669,20678,,,10,9,false,false
+91515,Military strategy,20679,20679,20688,,,10,9,false,false
+91820,Instructional design,20689,20689,20689,,,1,0,false,false
+92529,Intelligent transportation system,20690,20690,20699,,,10,9,false,false
+105355,Biomechanics,20700,20700,20709,,,10,9,false,false
+130918,Leadership,20710,20710,20719,,,10,9,false,false
+142425,Herpetology,20720,20720,20729,,,10,9,false,false
+146717,Social work,20730,20730,20739,,,10,9,false,false
+147484,Plant pathology,20740,20740,20749,,,10,9,false,false
+148363,Ancient Greek,20750,20750,20759,,,10,9,false,false
+148979,Queer theory,20760,20760,20769,,,10,9,false,false
+149354,Information science,20770,20770,20779,,,10,9,false,false
+152626,Ethnography,20780,20780,20789,,,10,9,false,false
+153324,Public policy,20790,20790,20799,,,10,9,false,false
+155953,Rural sociology,20800,20800,20809,,,10,9,false,false
+156593,Puppetry,20810,20810,20819,,,10,9,false,false
+156999,Circus,20820,20820,20829,,,10,9,false,false
+160313,Primatology,20830,20830,20839,,,10,9,false,false
+163225,Geopolitics,20840,20840,20849,,,10,9,false,false
+164633,Atmospheric science,20850,20850,20859,,,10,9,false,false
+164974,Hydrography,20860,20860,20869,,,10,9,false,false
+165851,Industrial design,20870,20870,20879,,,10,9,false,false
+168219,Criminal justice,20880,20880,20889,,,10,9,false,false
+174438,Animal welfare,20890,20890,20899,,,10,9,false,false
+177698,Behavioral economics,20900,20900,20909,,,10,9,false,false
+181567,Level design,20910,20910,20919,,,10,9,false,false
+182779,Sedimentology,20920,20920,20929,,,10,9,false,false
+182783,Stratigraphy,20930,20930,20939,,,10,9,false,false
+185945,Information architecture,20940,20940,20949,,,10,9,false,false
+186725,Agronomy,20950,20950,20959,,,10,9,false,false
+186861,Comparative religion,20960,20960,20969,,,10,9,false,false
+188739,Taphonomy,20970,20970,20979,,,10,9,false,false
+190908,Organology,20980,20980,20989,,,10,9,false,false
+195718,Cinematography,20990,20990,20999,,,10,9,false,false
+201948,Naval warfare,21000,21000,21009,,,10,9,false,false
+216211,Agroecology,21010,21010,21019,,,10,9,false,false
+216260,Horticulture,21020,21020,21029,,,10,9,false,false
+217324,Physical education,21030,21030,21039,,,10,9,false,false
+219268,Population genetics,21040,21040,21049,,,10,9,false,false
+219640,Animal husbandry,21050,21050,21059,,,10,9,false,false
+222839,Welfare state,21060,21060,21069,,,10,9,false,false
+233488,Machine learning,21070,21070,21079,,,10,9,false,false
+234714,Medical imaging,21080,21080,21089,,,10,9,false,false
+238112,Volcanology,21090,21090,21099,,,10,9,false,false
+239450,Strategic management,21100,21100,21109,,,10,9,false,false
+240583,Market research,21110,21110,21119,,,10,9,false,false
+241938,Penology,21120,21120,21129,,,10,9,false,false
+252137,Food science,21130,21130,21139,,,10,9,false,false
+256560,Brand management,21140,21140,21149,,,10,9,false,false
+270662,Sports coaching,21150,21150,21159,,,10,9,false,false
+277289,Wind power,21160,21160,21169,,,10,9,false,false
+311401,Renaissance art,21170,21170,21179,,,10,9,false,false
+325329,Cold War,21180,21180,21189,,,10,9,false,false
+325726,Social network analysis,21190,21190,21199,,,10,9,false,false
+340982,Petrology,21200,21200,21209,,,10,9,false,false
+341012,Rosa,21210,21210,21219,,,10,9,false,false
+341598,Cybercrime,21220,21220,21229,,,10,9,false,false
+354220,Religious studies,21230,21230,21239,,,10,9,false,false
+359135,Chemical kinetics,21240,21240,21249,,,10,9,false,false
+361897,Astrophysics,21250,21250,21259,,,10,9,false,false
+373212,Social research,21260,21260,21269,,,10,9,false,false
+374964,Dendrology,21270,21270,21279,,,10,9,false,false
+379047,Forensic anthropology,21280,21280,21289,,,10,9,false,false
+381219,Open access,21290,21290,21299,,,10,9,false,false
+381399,Hydroelectricity,21300,21300,21309,,,10,9,false,false
+383854,Parasitology,21310,21310,21319,,,10,9,false,false
+395477,Exercise physiology,21320,21320,21329,,,10,9,false,false
+398638,Biogeochemical cycle,21330,21330,21339,,,10,9,false,false
+402119,Game studies,21340,21340,21349,,,10,9,false,false
+419686,Pedagogy,21350,21350,21350,,,1,0,false,false
+424948,Brutalist architecture,21351,21351,21360,,,10,9,false,false
+425938,Animal cognition,21361,21361,21370,,,10,9,false,false
+436824,Gerontology,21371,21371,21380,,,10,9,false,false
+438758,Mammalogy,21381,21381,21390,,,10,9,false,false
+443733,Formica,21391,21391,21400,,,10,9,false,false
+463734,Public health,21401,21401,21410,,,10,9,false,false
+473526,Video game design,21411,21411,21420,,,10,9,false,false
+479983,Curriculum,21421,21421,21421,,,1,0,false,false
+498220,Paleoanthropology,21422,21422,21431,,,10,9,false,false
+521555,Ancient Rome,21432,21432,21441,,,10,9,false,false
+523499,Iconography,21442,21442,21451,,,10,9,false,false
+540801,Behaviorism,21452,21452,21452,,,1,0,false,false
+545909,Kinesiology,21453,21453,21462,,,10,9,false,false
+548053,Chulalongkorn University,21463,21463,21472,,,10,9,false,false
+564204,Esports,21473,21473,21482,,,10,9,false,false
+573174,Interior design,21483,21483,21492,,,10,9,false,false
+587618,Public administration,21493,21493,21502,,,10,9,false,false
+597759,Travel agency,21503,21503,21512,,,10,9,false,false
+640493,Auditing,21513,21513,21517,,,5,4,false,false
+718920,Kasetsart University,21518,21518,21527,,,10,9,false,false
+821948,Apis (genus),21528,21528,21537,,,10,9,false,false
+841429,Synthetic biology,21538,21538,21547,,,10,9,false,false
+844809,Museology,21548,21548,21557,,,10,9,false,false
+852274,Social policy,21558,21558,21567,,,10,9,false,false
+868108,Nanomaterials,21568,21568,21577,,,10,9,false,false
+911833,Graphene,21578,21578,21587,,,10,9,false,false
+936085,Green chemistry,21588,21588,21597,,,10,9,false,false
+954079,Film studies,21598,21598,21607,,,10,9,false,false
+972788,Air warfare,21608,21608,21608,,,1,0,false,false
+1008170,Oryza sativa,21609,21609,21618,,,10,9,false,false
+1016480,Community development,21619,21619,21628,,,10,9,false,false
+1023078,Human resource management,21629,21629,21638,,,10,9,false,false
+1031149,Silviculture,21639,21639,21648,,,10,9,false,false
+1039873,Creative writing,21649,21649,21658,,,10,9,false,false
+1057083,Microbial ecology,21659,21659,21668,,,10,9,false,false
+1071756,Gastronomy,21669,21669,21678,,,10,9,false,false
+1088262,Organizational behavior,21679,21679,21688,,,10,9,false,false
+1118651,Sports science,21689,21689,21698,,,10,9,false,false
+1137997,Screenwriting,21699,21699,21708,,,10,9,false,false
+1148604,Research university,21709,21709,21718,,,10,9,false,false
+1365637,Sports medicine,21719,21719,21728,,,10,9,false,false
+1404387,Digital preservation,21729,21729,21738,,,10,9,false,false
+1457852,Chiang Mai University,21739,21739,21748,,,10,9,false,false
+1488463,Agroforestry,21749,21749,21758,,,10,9,false,false
+1526304,Financial risk management,21759,21759,21768,,,10,9,false,false
+1605735,Mass communication,21769,21769,21778,,,10,9,false,false
+1614090,Heritage tourism,21779,21779,21788,,,10,9,false,false
+1636646,Food technology,21789,21789,21798,,,10,9,false,false
+1728199,Service design,21799,21799,21808,,,10,9,false,false
+1762926,Molecular machine,21809,21809,21818,,,10,9,false,false
+1850719,Controlled vocabulary,21819,21819,21828,,,10,9,false,false
+1864889,Cosmology,21829,21829,21838,,,10,9,false,false
+1943640,Intersectionality,21839,21839,21848,,,10,9,false,false
+1946773,Legal research,21849,21849,21849,,,1,0,false,false
+1948637,Neuroplasticity,21850,21850,21850,,,1,0,false,false
+2146034,CRISPR,21851,21851,21860,,,10,9,false,false
+2215958,Forest ecology,21861,21861,21870,,,10,9,false,false
+2581209,Sensory analysis,21871,21871,21880,,,10,9,false,false
+2655353,World literature,21881,21881,21890,,,10,9,false,false
+2690850,Men's studies,21891,21891,21900,,,10,9,false,false
+2704720,Sustainable architecture,21901,21901,21910,,,10,9,false,false
+3036868,Archival science,21911,21911,21920,,,10,9,false,false
+3059114,Urban studies,21921,21921,21930,,,10,9,false,false
+3162270,Tour guide,21931,21931,21940,,,10,9,false,false
+3218648,Cultural heritage,21941,21941,21950,,,10,9,false,false
+3369375,Cyberwarfare,21951,21951,21960,,,10,9,false,false
+3557219,Neuroimaging,21961,21961,21961,,,1,0,false,false
+3749918,Deep sea,21962,21962,21971,,,10,9,false,false
+4036973,Sustainable tourism,21972,21972,21981,,,10,9,false,false
+4250553,Gene,21982,21982,21991,,,10,9,false,false
+4538355,Textile design,21992,21992,22001,,,10,9,false,false
+4857593,Clinical research,22002,22002,22011,,,10,9,false,false
+5042951,Climate change,22012,22012,22021,,,10,9,false,false
+5090546,Veterinary surgery,22022,22022,22031,,,10,9,false,false
+5172349,Library science,22032,22032,22041,,,10,9,false,false
+5556196,Crime prevention,22042,22042,22051,,,10,9,false,false
+5654027,Synapse,22052,22052,22052,,,1,0,false,false
+5658554,Paleobiology,22053,22053,22062,,,10,9,false,false
+5703217,Classical philology,22063,22063,22072,,,10,9,false,false
+6073894,Fermentation,22073,22073,22082,,,10,9,false,false
+6191720,Ludology,22083,22083,22089,,,7,6,false,false
+7484714,Forest management,22090,22090,22099,,,10,9,false,false
+7945684,User experience design,22100,22100,22109,,,10,9,false,false
+8053588,Food safety,22110,22110,22119,,,10,9,false,false
+8195726,International law,22120,22120,22120,,,1,0,false,false
+8327305,Nanoelectronics,22121,22121,22130,,,10,9,false,false
+9580771,Bioprocess engineering,22131,22131,22140,,,10,9,false,false
+9933471,Digital marketing,22141,22141,22150,,,10,9,false,false
+9996777,Veterinary pathology,22151,22151,22160,,,10,9,false,false
+10532933,Greco-Roman world,22161,22161,22170,,,10,9,false,false
+10799117,Fashion design,22171,22171,22180,,,10,9,false,false
+11065202,Film criticism,22181,22181,22190,,,10,9,false,false
+11719855,Education sciences,22191,22191,22191,,,1,0,false,false
+13143943,Hospitality management,22192,22192,22201,,,10,9,false,false
+13201685,Smart grid,22202,22202,22211,,,10,9,false,false
+13690575,Solar power,22212,22212,22221,,,10,9,false,false
+13692155,Philosophy,22222,22222,22222,,,1,0,false,false
+14186697,Child welfare,22223,22223,22227,,,5,4,false,false
+18413531,Sustainability,22228,22228,22237,,,10,9,false,false
+18542565,Serious game,22238,22238,22247,,,10,9,false,false
+18580879,Transport,22248,22248,22257,,,10,9,false,false
+18716923,Algebra,22258,22258,22267,,,10,9,false,false
+18717981,Sociology,22268,22268,22277,,,10,9,false,false
+18933632,Metadata,22278,22278,22287,,,10,9,false,false
+18934863,Digital library,22288,22288,22297,,,10,9,false,false
+18949668,Law,22298,22298,22298,,,1,0,false,false
+18951655,Archaeology,22299,22299,22308,,,10,9,false,false
+18963870,Literature,22309,22309,22318,,,10,9,false,false
+19178886,Protist,22319,22319,22328,,,10,9,false,false
+19604228,Dark energy,22329,22329,22338,,,10,9,false,false
+20903754,Robotics,22339,22339,22348,,,10,9,false,false
+20913753,Drama,22349,22349,22358,,,10,9,false,false
+20913771,Theatre,22359,22359,22368,,,10,9,false,false
+21179478,Social media marketing,22369,22369,22378,,,10,9,false,false
+21207536,Art history,22379,22379,22388,,,10,9,false,false
+21296224,Architecture,22389,22389,22398,,,10,9,false,false
+21351321,Criminal law,22399,22399,22399,,,1,0,false,false
+21393077,Microbiology,22400,22400,22409,,,10,9,false,false
+21732545,Aerospace engineering,22410,22410,22419,,,10,9,false,false
+21902683,Earth system science,22420,22420,22429,,,10,9,false,false
+22395556,Agricultural engineering,22430,22430,22439,,,10,9,false,false
+22760983,Linguistics,22440,22440,22440,,,1,0,false,false
+23713433,Novel,22441,22441,22450,,,10,9,false,false
+25152964,Magic (illusion),22451,22451,22460,,,10,9,false,false
+26162030,Public transport,22461,22461,22470,,,10,9,false,false
+29089099,Gamification,22471,22471,22480,,,10,9,false,false
+29174999,Mysticism,22481,22481,22490,,,10,9,false,false
+29815796,Exhibition,22491,22491,22500,,,10,9,false,false
+32472154,Deep learning,22501,22501,22510,,,10,9,false,false
+33094327,Telecommunication,22511,22511,22520,,,10,9,false,false
+33494733,Library history,22521,22521,22530,,,10,9,false,false
+33734529,Visual arts,22531,22531,22540,,,10,9,false,false
+34154970,Criminology,22541,22541,22550,,,10,9,false,false
+34488928,Human services,22551,22551,22560,,,10,9,false,false
+34742901,Corporate finance,22561,22561,22570,,,10,9,false,false
+36488837,Art curator,22571,22571,22571,,,1,0,false,false
+39214326,Sexuality studies,22572,22572,22573,,,2,1,false,false
+42173483,Consumer behavior,22574,22574,22576,,,3,2,false,false
+46212943,Urban planning,22577,22577,22586,,,10,9,false,false
+46426065,Logic,22587,22587,22587,,,1,0,false,false
+64418530,Knowledge graph,22588,22588,22597,,,10,9,false,false
+67939895,Conservation and restoration of cultural heritage,22598,22598,22598,,,1,0,false,false
+76121942,Neural network,22599,22599,22609,,,11,10,false,false

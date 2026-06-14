@@ -1,0 +1,6 @@
+﻿name,ms,started_at,ok,rows,pages,revisions,categories,avg_revisions_per_page,revisions_per_sec,pages_per_sec,reads,avg_ms_per_read,reads_per_sec,avg_versions,avg_ms_per_history,history_reads_per_sec
+clear_run_before,1.5297,2026-06-13T07:30:35.449Z,true,,,,,,,,,,,,,
+load_wiki_rows,15.4986,2026-06-13T07:30:35.465Z,true,3657,399,3656,58,9.1654,,,,,,,,
+import_wiki_pages,274.9221,2026-06-13T07:30:35.740Z,true,,399,3656,,,13298.3125,1451.3202,,,,,,
+sample_latest_reads,203.852,2026-06-13T07:30:35.944Z,true,,,,,,,,200,1.0193,981.1039,,,
+sample_history_reads,198.0729,2026-06-13T07:30:36.142Z,true,,,,,,,,200,,,9.235,0.9904,1009.7292

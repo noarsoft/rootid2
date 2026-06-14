@@ -1,0 +1,885 @@
+{
+  "report_type": "wiki_benchmark_summary",
+  "generated_at": "2026-06-13T07:30:36.522Z",
+  "run_id": "latest",
+  "source_dir": "C:\\camt study\\research\\rootid_system\\rootid2\\benchmark\\results",
+  "missing_methods": [],
+  "methods": [
+    {
+      "method": "PG Relational",
+      "method_key": "pg_relational",
+      "benchmark": "wiki-pg-relational",
+      "run_id": "wiki-pg-relational-20260613-142928-cbbc0c",
+      "timestamp": "2026-06-13T07:29:45.512Z",
+      "source_file": "wiki-pg-relational-result-wiki-pg-relational-20260613-142928-cbbc0c.json",
+      "dataset": {
+        "rows": 3657,
+        "pages": 399,
+        "revisions": 3656,
+        "categories": 58,
+        "avg_revisions_per_page": 9.1654,
+        "min_revisions_per_page": 1,
+        "max_revisions_per_page": 11,
+        "invalid_rows": 0,
+        "include_text": false,
+        "note": "Each Wikipedia page is treated as one logical object. Each revision is treated as one version record."
+      },
+      "input_loading": {
+        "metric_name": "load_wiki_rows",
+        "execute_ms": 17.4464,
+        "rows": 3657,
+        "pages": 399,
+        "revisions": 3656,
+        "note": "Load wiki-normalized.json into memory and group rows by page_id. This step does not insert data into the database."
+      },
+      "insert": {
+        "metric_name": "import_wiki_pages",
+        "execute_ms": 16930.9289,
+        "pages": 399,
+        "revisions": 3657,
+        "updates": null,
+        "pages_per_sec": 23.5663,
+        "revisions_per_sec": 215.9952,
+        "updates_per_sec": null,
+        "note": "Insert page records into bench_wiki_page and revision records into bench_wiki_revision. The input is loaded from wiki-normalized.json before database insertion."
+      },
+      "read": {
+        "latest": {
+          "metric_name": "sample_latest_reads",
+          "execute_ms": 215.7036,
+          "reads": 200,
+          "avg_ms_per_read": 1.0785,
+          "reads_per_sec": 927.1982,
+          "deleted_markers": null,
+          "not_found_as_current": null,
+          "note": "Read latest/current version samples. Default sample size is controlled by BENCH_SAMPLE_READS."
+        },
+        "history": {
+          "metric_name": "sample_history_reads",
+          "execute_ms": 206.0492,
+          "reads": 200,
+          "avg_versions": 9.235,
+          "avg_ms_per_history": 1.0302,
+          "history_reads_per_sec": 970.642,
+          "note": "Read version history samples for logical objects/pages. Default sample size is controlled by BENCH_SAMPLE_READS."
+        }
+      },
+      "update": {
+        "enabled": false,
+        "mutation_env": "BENCH_PG_RELATIONAL_MUTATION",
+        "metric_name": "sample_version_updates",
+        "execute_ms": null,
+        "updates": null,
+        "avg_ms_per_update": null,
+        "updates_per_sec": null,
+        "note": "Optional baseline mutation. When enabled, update appends a synthetic revision row. Disabled by default so PG Relational can remain a reference dataset."
+      },
+      "read_after_update": {
+        "latest": {
+          "metric_name": "sample_latest_reads_after_update",
+          "execute_ms": null,
+          "reads": null,
+          "avg_ms_per_read": null,
+          "avg_ms_per_history": null,
+          "reads_per_sec": null,
+          "history_reads_per_sec": null,
+          "avg_versions": null
+        },
+        "history": {
+          "metric_name": "sample_history_reads_after_update",
+          "execute_ms": null,
+          "reads": null,
+          "avg_ms_per_read": null,
+          "avg_ms_per_history": null,
+          "reads_per_sec": null,
+          "history_reads_per_sec": null,
+          "avg_versions": null
+        }
+      },
+      "delete": {
+        "enabled": false,
+        "mutation_env": "BENCH_PG_RELATIONAL_MUTATION",
+        "metric_name": "sample_deletes",
+        "execute_ms": null,
+        "deletes": null,
+        "avg_ms_per_delete": null,
+        "deletes_per_sec": null,
+        "note": "Optional baseline mutation. When enabled, delete physically removes the latest revision row. Disabled by default."
+      },
+      "read_after_delete": {
+        "latest": {
+          "metric_name": "sample_latest_reads_after_delete",
+          "execute_ms": null,
+          "reads": null,
+          "avg_ms_per_read": null,
+          "avg_ms_per_history": null,
+          "reads_per_sec": null,
+          "history_reads_per_sec": null,
+          "avg_versions": null
+        },
+        "verification": null
+      },
+      "schema": {
+        "model": "Fixed relational schema with separated page and revision tables.",
+        "create_business_ms": null,
+        "create_schema_v1_ms": null,
+        "update_schema_v2_ms": null,
+        "compare_with_latest_schema": null,
+        "migrate_to_latest_schema": null
+      },
+      "storage": {
+        "pages": 399,
+        "revisions": 3656,
+        "documents": null,
+        "physical_rows": 3656,
+        "current_rows": null,
+        "history_rows": null,
+        "deleted_rows": null,
+        "logical_rootids": 399,
+        "database_bytes": 83844119,
+        "data_table_bytes": null,
+        "schema_table_bytes": null,
+        "page_table_bytes": 1441792,
+        "revision_table_bytes": 24141824,
+        "jsonb_table_bytes": null,
+        "collection_bytes": null,
+        "note": "Storage statistics are model-specific. Not every model reports the same storage fields."
+      },
+      "raw_metrics": [
+        {
+          "name": "clear_run_before",
+          "ms": 3.006,
+          "started_at": "2026-06-13T07:29:28.138Z",
+          "ok": true
+        },
+        {
+          "name": "load_wiki_rows",
+          "ms": 17.4464,
+          "started_at": "2026-06-13T07:29:28.155Z",
+          "ok": true,
+          "rows": 3657,
+          "pages": 399,
+          "revisions": 3656,
+          "categories": 58,
+          "avg_revisions_per_page": 9.1654
+        },
+        {
+          "name": "import_wiki_pages",
+          "ms": 16930.9289,
+          "started_at": "2026-06-13T07:29:45.086Z",
+          "ok": true,
+          "pages": 399,
+          "revisions": 3657,
+          "revisions_per_sec": 215.9952,
+          "pages_per_sec": 23.5663
+        },
+        {
+          "name": "sample_latest_reads",
+          "ms": 215.7036,
+          "started_at": "2026-06-13T07:29:45.302Z",
+          "ok": true,
+          "reads": 200,
+          "avg_ms_per_read": 1.0785,
+          "reads_per_sec": 927.1982
+        },
+        {
+          "name": "sample_history_reads",
+          "ms": 206.0492,
+          "started_at": "2026-06-13T07:29:45.508Z",
+          "ok": true,
+          "reads": 200,
+          "avg_versions": 9.235,
+          "avg_ms_per_history": 1.0302,
+          "history_reads_per_sec": 970.642
+        }
+      ]
+    },
+    {
+      "method": "PG JSONB",
+      "method_key": "pg_jsonb",
+      "benchmark": "wiki-pg-jsonb",
+      "run_id": "wiki-pg-jsonb-20260613-142945-cf21ad",
+      "timestamp": "2026-06-13T07:30:02.153Z",
+      "source_file": "wiki-pg-jsonb-result-wiki-pg-jsonb-20260613-142945-cf21ad.json",
+      "dataset": {
+        "rows": 3657,
+        "pages": 399,
+        "revisions": 3656,
+        "categories": 58,
+        "avg_revisions_per_page": 9.1654,
+        "min_revisions_per_page": 1,
+        "max_revisions_per_page": 11,
+        "invalid_rows": 0,
+        "include_text": false,
+        "note": "Each Wikipedia page is treated as one logical object. Each revision is treated as one version record."
+      },
+      "input_loading": {
+        "metric_name": "load_wiki_rows",
+        "execute_ms": 16.8895,
+        "rows": 3657,
+        "pages": 399,
+        "revisions": 3656,
+        "note": "Load wiki-normalized.json into memory and group rows by page_id. This step does not insert data into the database."
+      },
+      "insert": {
+        "metric_name": "import_wiki_pages",
+        "execute_ms": 15774.7516,
+        "pages": 399,
+        "revisions": 3657,
+        "updates": null,
+        "pages_per_sec": 25.2936,
+        "revisions_per_sec": 231.8262,
+        "updates_per_sec": null,
+        "note": "Insert each Wikipedia revision as a JSONB payload row into bench_wiki_jsonb. The input is loaded from wiki-normalized.json before database insertion."
+      },
+      "read": {
+        "latest": {
+          "metric_name": "sample_latest_reads",
+          "execute_ms": 220.7193,
+          "reads": 200,
+          "avg_ms_per_read": 1.1036,
+          "reads_per_sec": 906.1283,
+          "deleted_markers": null,
+          "not_found_as_current": null,
+          "note": "Read latest/current version samples. Default sample size is controlled by BENCH_SAMPLE_READS."
+        },
+        "history": {
+          "metric_name": "sample_history_reads",
+          "execute_ms": 193.4256,
+          "reads": 200,
+          "avg_versions": 9.235,
+          "avg_ms_per_history": 0.9671,
+          "history_reads_per_sec": 1033.9893,
+          "note": "Read version history samples for logical objects/pages. Default sample size is controlled by BENCH_SAMPLE_READS."
+        }
+      },
+      "update": {
+        "enabled": false,
+        "mutation_env": "BENCH_PG_JSONB_MUTATION",
+        "metric_name": "sample_version_updates",
+        "execute_ms": null,
+        "updates": null,
+        "avg_ms_per_update": null,
+        "updates_per_sec": null,
+        "note": "Optional baseline mutation. When enabled, update appends a synthetic JSONB revision row. Disabled by default."
+      },
+      "read_after_update": {
+        "latest": {
+          "metric_name": "sample_latest_reads_after_update",
+          "execute_ms": null,
+          "reads": null,
+          "avg_ms_per_read": null,
+          "avg_ms_per_history": null,
+          "reads_per_sec": null,
+          "history_reads_per_sec": null,
+          "avg_versions": null
+        },
+        "history": {
+          "metric_name": "sample_history_reads_after_update",
+          "execute_ms": null,
+          "reads": null,
+          "avg_ms_per_read": null,
+          "avg_ms_per_history": null,
+          "reads_per_sec": null,
+          "history_reads_per_sec": null,
+          "avg_versions": null
+        }
+      },
+      "delete": {
+        "enabled": false,
+        "mutation_env": "BENCH_PG_JSONB_MUTATION",
+        "metric_name": "sample_deletes",
+        "execute_ms": null,
+        "deletes": null,
+        "avg_ms_per_delete": null,
+        "deletes_per_sec": null,
+        "note": "Optional baseline mutation. When enabled, delete physically removes the latest JSONB revision row. Disabled by default."
+      },
+      "read_after_delete": {
+        "latest": {
+          "metric_name": "sample_latest_reads_after_delete",
+          "execute_ms": null,
+          "reads": null,
+          "avg_ms_per_read": null,
+          "avg_ms_per_history": null,
+          "reads_per_sec": null,
+          "history_reads_per_sec": null,
+          "avg_versions": null
+        },
+        "verification": null
+      },
+      "schema": {
+        "model": "Single PostgreSQL table using JSONB payload for revision records.",
+        "create_business_ms": null,
+        "create_schema_v1_ms": null,
+        "update_schema_v2_ms": null,
+        "compare_with_latest_schema": null,
+        "migrate_to_latest_schema": null
+      },
+      "storage": {
+        "pages": 399,
+        "revisions": 3656,
+        "documents": null,
+        "physical_rows": 3656,
+        "current_rows": null,
+        "history_rows": null,
+        "deleted_rows": null,
+        "logical_rootids": null,
+        "database_bytes": 87571479,
+        "data_table_bytes": null,
+        "schema_table_bytes": null,
+        "page_table_bytes": null,
+        "revision_table_bytes": null,
+        "jsonb_table_bytes": 43982848,
+        "collection_bytes": null,
+        "note": "Storage statistics are model-specific. Not every model reports the same storage fields."
+      },
+      "raw_metrics": [
+        {
+          "name": "clear_run_before",
+          "ms": 2.1773,
+          "started_at": "2026-06-13T07:29:45.943Z",
+          "ok": true
+        },
+        {
+          "name": "load_wiki_rows",
+          "ms": 16.8895,
+          "started_at": "2026-06-13T07:29:45.960Z",
+          "ok": true,
+          "rows": 3657,
+          "pages": 399,
+          "revisions": 3656,
+          "categories": 58,
+          "avg_revisions_per_page": 9.1654
+        },
+        {
+          "name": "import_wiki_pages",
+          "ms": 15774.7516,
+          "started_at": "2026-06-13T07:30:01.735Z",
+          "ok": true,
+          "pages": 399,
+          "revisions": 3657,
+          "revisions_per_sec": 231.8262,
+          "pages_per_sec": 25.2936
+        },
+        {
+          "name": "sample_latest_reads",
+          "ms": 220.7193,
+          "started_at": "2026-06-13T07:30:01.956Z",
+          "ok": true,
+          "reads": 200,
+          "avg_ms_per_read": 1.1036,
+          "reads_per_sec": 906.1283
+        },
+        {
+          "name": "sample_history_reads",
+          "ms": 193.4256,
+          "started_at": "2026-06-13T07:30:02.150Z",
+          "ok": true,
+          "reads": 200,
+          "avg_versions": 9.235,
+          "avg_ms_per_history": 0.9671,
+          "history_reads_per_sec": 1033.9893
+        }
+      ]
+    },
+    {
+      "method": "MongoDB",
+      "method_key": "mongo",
+      "benchmark": "wiki-mongo",
+      "run_id": "wiki-mongo-20260613-143035-00b95c",
+      "timestamp": "2026-06-13T07:30:36.160Z",
+      "source_file": "wiki-mongo-result-wiki-mongo-20260613-143035-00b95c.json",
+      "dataset": {
+        "rows": 3657,
+        "pages": 399,
+        "revisions": 3656,
+        "categories": 58,
+        "avg_revisions_per_page": 9.1654,
+        "min_revisions_per_page": 1,
+        "max_revisions_per_page": 11,
+        "invalid_rows": 0,
+        "include_text": false,
+        "note": "Each Wikipedia page is treated as one logical object. Each revision is treated as one version record."
+      },
+      "input_loading": {
+        "metric_name": "load_wiki_rows",
+        "execute_ms": 15.4986,
+        "rows": 3657,
+        "pages": 399,
+        "revisions": 3656,
+        "note": "Load wiki-normalized.json into memory and group rows by page_id. This step does not insert data into the database."
+      },
+      "insert": {
+        "metric_name": "import_wiki_pages",
+        "execute_ms": 274.9221,
+        "pages": 399,
+        "revisions": 3656,
+        "updates": null,
+        "pages_per_sec": 1451.3202,
+        "revisions_per_sec": 13298.3125,
+        "updates_per_sec": null,
+        "note": "Insert each Wikipedia revision as a MongoDB document. The input is loaded from wiki-normalized.json before database insertion."
+      },
+      "read": {
+        "latest": {
+          "metric_name": "sample_latest_reads",
+          "execute_ms": 203.852,
+          "reads": 200,
+          "avg_ms_per_read": 1.0193,
+          "reads_per_sec": 981.1039,
+          "deleted_markers": null,
+          "not_found_as_current": null,
+          "note": "Read latest/current version samples. Default sample size is controlled by BENCH_SAMPLE_READS."
+        },
+        "history": {
+          "metric_name": "sample_history_reads",
+          "execute_ms": 198.0729,
+          "reads": 200,
+          "avg_versions": 9.235,
+          "avg_ms_per_history": 0.9904,
+          "history_reads_per_sec": 1009.7292,
+          "note": "Read version history samples for logical objects/pages. Default sample size is controlled by BENCH_SAMPLE_READS."
+        }
+      },
+      "update": {
+        "enabled": false,
+        "mutation_env": "BENCH_MONGO_MUTATION",
+        "metric_name": "sample_version_updates",
+        "execute_ms": null,
+        "updates": null,
+        "avg_ms_per_update": null,
+        "updates_per_sec": null,
+        "note": "Optional baseline mutation. When enabled, update appends a synthetic revision document. Disabled by default."
+      },
+      "read_after_update": {
+        "latest": {
+          "metric_name": "sample_latest_reads_after_update",
+          "execute_ms": null,
+          "reads": null,
+          "avg_ms_per_read": null,
+          "avg_ms_per_history": null,
+          "reads_per_sec": null,
+          "history_reads_per_sec": null,
+          "avg_versions": null
+        },
+        "history": {
+          "metric_name": "sample_history_reads_after_update",
+          "execute_ms": null,
+          "reads": null,
+          "avg_ms_per_read": null,
+          "avg_ms_per_history": null,
+          "reads_per_sec": null,
+          "history_reads_per_sec": null,
+          "avg_versions": null
+        }
+      },
+      "delete": {
+        "enabled": false,
+        "mutation_env": "BENCH_MONGO_MUTATION",
+        "metric_name": "sample_deletes",
+        "execute_ms": null,
+        "deletes": null,
+        "avg_ms_per_delete": null,
+        "deletes_per_sec": null,
+        "note": "Optional baseline mutation. When enabled, delete physically removes the latest revision document. Disabled by default."
+      },
+      "read_after_delete": {
+        "latest": {
+          "metric_name": "sample_latest_reads_after_delete",
+          "execute_ms": null,
+          "reads": null,
+          "avg_ms_per_read": null,
+          "avg_ms_per_history": null,
+          "reads_per_sec": null,
+          "history_reads_per_sec": null,
+          "avg_versions": null
+        },
+        "verification": null
+      },
+      "schema": {
+        "model": "Document-based storage using MongoDB collection.",
+        "create_business_ms": null,
+        "create_schema_v1_ms": null,
+        "update_schema_v2_ms": null,
+        "compare_with_latest_schema": null,
+        "migrate_to_latest_schema": null
+      },
+      "storage": {
+        "pages": 399,
+        "revisions": 3656,
+        "documents": 3656,
+        "physical_rows": 3656,
+        "current_rows": null,
+        "history_rows": null,
+        "deleted_rows": null,
+        "logical_rootids": null,
+        "database_bytes": null,
+        "data_table_bytes": null,
+        "schema_table_bytes": null,
+        "page_table_bytes": null,
+        "revision_table_bytes": null,
+        "jsonb_table_bytes": null,
+        "collection_bytes": 46044452,
+        "note": "Storage statistics are model-specific. Not every model reports the same storage fields."
+      },
+      "raw_metrics": [
+        {
+          "name": "clear_run_before",
+          "ms": 1.5297,
+          "started_at": "2026-06-13T07:30:35.449Z",
+          "ok": true
+        },
+        {
+          "name": "load_wiki_rows",
+          "ms": 15.4986,
+          "started_at": "2026-06-13T07:30:35.465Z",
+          "ok": true,
+          "rows": 3657,
+          "pages": 399,
+          "revisions": 3656,
+          "categories": 58,
+          "avg_revisions_per_page": 9.1654
+        },
+        {
+          "name": "import_wiki_pages",
+          "ms": 274.9221,
+          "started_at": "2026-06-13T07:30:35.740Z",
+          "ok": true,
+          "pages": 399,
+          "revisions": 3656,
+          "revisions_per_sec": 13298.3125,
+          "pages_per_sec": 1451.3202
+        },
+        {
+          "name": "sample_latest_reads",
+          "ms": 203.852,
+          "started_at": "2026-06-13T07:30:35.944Z",
+          "ok": true,
+          "reads": 200,
+          "avg_ms_per_read": 1.0193,
+          "reads_per_sec": 981.1039
+        },
+        {
+          "name": "sample_history_reads",
+          "ms": 198.0729,
+          "started_at": "2026-06-13T07:30:36.142Z",
+          "ok": true,
+          "reads": 200,
+          "avg_versions": 9.235,
+          "avg_ms_per_history": 0.9904,
+          "history_reads_per_sec": 1009.7292
+        }
+      ]
+    },
+    {
+      "method": "RootID",
+      "method_key": "rootid",
+      "benchmark": "wiki-rootid",
+      "run_id": "wiki-rootid-20260613-143003-1ba6ad",
+      "timestamp": "2026-06-13T07:30:34.996Z",
+      "source_file": "wiki-rootid-result-wiki-rootid-20260613-143003-1ba6ad.json",
+      "dataset": {
+        "rows": 3657,
+        "pages": 399,
+        "revisions": 3656,
+        "categories": 58,
+        "avg_revisions_per_page": 9.1654,
+        "min_revisions_per_page": 1,
+        "max_revisions_per_page": 11,
+        "invalid_rows": 0,
+        "include_text": false,
+        "note": "Each Wikipedia page is treated as one logical object. Each revision is treated as one version record."
+      },
+      "input_loading": {
+        "metric_name": "load_wiki_rows",
+        "execute_ms": 17.8172,
+        "rows": 3657,
+        "pages": 399,
+        "revisions": 3656,
+        "note": "Load wiki-normalized.json into memory and group rows by page_id. This step does not insert data into the database."
+      },
+      "insert": {
+        "metric_name": "import_wiki_pages_as_rootid",
+        "execute_ms": 28640.6367,
+        "pages": 399,
+        "revisions": 3657,
+        "updates": 3258,
+        "pages_per_sec": 13.9313,
+        "revisions_per_sec": 127.6857,
+        "updates_per_sec": 113.7545,
+        "note": "Insert revisions into the RootID data table as version chains. Each page_id becomes one logical _rootid chain, and each revision becomes one physical version row. Updating a page creates a new version and marks the previous current row as _flag='u'."
+      },
+      "read": {
+        "latest": {
+          "metric_name": "sample_latest_reads",
+          "execute_ms": 122.5811,
+          "reads": 200,
+          "avg_ms_per_read": 0.6129,
+          "reads_per_sec": 1631.5729,
+          "deleted_markers": null,
+          "not_found_as_current": null,
+          "note": "Read latest/current version samples. Default sample size is controlled by BENCH_SAMPLE_READS."
+        },
+        "history": {
+          "metric_name": "sample_history_reads",
+          "execute_ms": 233.1353,
+          "reads": 200,
+          "avg_versions": 9.235,
+          "avg_ms_per_history": 1.1657,
+          "history_reads_per_sec": 857.8709,
+          "note": "Read version history samples for logical objects/pages. Default sample size is controlled by BENCH_SAMPLE_READS."
+        }
+      },
+      "update": {
+        "enabled": true,
+        "mutation_env": null,
+        "metric_name": "sample_version_updates",
+        "execute_ms": 755.9294,
+        "updates": 100,
+        "avg_ms_per_update": 7.5593,
+        "updates_per_sec": 132.2875,
+        "note": "RootID update creates a new version row and marks the previous current row as historical with _flag='u'."
+      },
+      "read_after_update": {
+        "latest": {
+          "metric_name": "sample_latest_reads_after_update",
+          "execute_ms": 123.6795,
+          "reads": 200,
+          "avg_ms_per_read": 0.6184,
+          "reads_per_sec": 1617.0829,
+          "deleted_markers": null,
+          "not_found_as_current": null
+        },
+        "history": {
+          "metric_name": "sample_history_reads_after_update",
+          "execute_ms": 216.6236,
+          "reads": 200,
+          "avg_versions": 9.735,
+          "avg_ms_per_history": 1.0831,
+          "history_reads_per_sec": 923.2604
+        }
+      },
+      "delete": {
+        "enabled": true,
+        "mutation_env": null,
+        "metric_name": "sample_deletes",
+        "execute_ms": 562.8466,
+        "deletes": 50,
+        "avg_ms_per_delete": 11.2569,
+        "deletes_per_sec": 88.8342,
+        "note": "RootID delete creates a delete marker with _flag='d' while preserving previous versions."
+      },
+      "read_after_delete": {
+        "latest": {
+          "metric_name": "sample_latest_reads_after_delete",
+          "execute_ms": 60.8017,
+          "reads": 50,
+          "avg_ms_per_read": 1.216,
+          "reads_per_sec": 822.3454,
+          "deleted_markers": 50,
+          "not_found_as_current": 50
+        },
+        "verification": {
+          "metric_name": "verify_deletes",
+          "execute_ms": 79.1923,
+          "checks": 50,
+          "ok": 50,
+          "failed": 0,
+          "avg_ms_per_check": 1.5838,
+          "checks_per_sec": 631.3745
+        }
+      },
+      "schema": {
+        "model": "Versioned schema model. Schema v1 is created before import. Schema v2 is created after import to evaluate schema comparison and migration.",
+        "create_business_ms": 16.665,
+        "create_schema_v1_ms": 6.7707,
+        "update_schema_v2_ms": 7.7294,
+        "compare_with_latest_schema": {
+          "metric_name": "sample_compare_with_latest_schema",
+          "execute_ms": 197.2511,
+          "rows": 100,
+          "avg_ms_per_compare": 1.9725,
+          "compares_per_sec": 506.968,
+          "note": "RootID-only operation. Compare data rows created with schema v1 against the latest schema version."
+        },
+        "migrate_to_latest_schema": {
+          "metric_name": "sample_migrate_to_latest_schema",
+          "execute_ms": 137.6833,
+          "rows": 100,
+          "migrated": 5,
+          "already_latest": 0,
+          "requires_review": 0,
+          "avg_ms_per_migrate": 1.3768,
+          "migrates_per_sec": 726.3045,
+          "note": "RootID-only operation. Migrate selected data rows to the latest schema version by creating new RootID versions."
+        }
+      },
+      "storage": {
+        "pages": null,
+        "revisions": null,
+        "documents": null,
+        "physical_rows": 3812,
+        "current_rows": 349,
+        "history_rows": 3413,
+        "deleted_rows": 50,
+        "logical_rootids": 399,
+        "database_bytes": 91085847,
+        "data_table_bytes": 11214848,
+        "schema_table_bytes": 237568,
+        "page_table_bytes": null,
+        "revision_table_bytes": null,
+        "jsonb_table_bytes": null,
+        "collection_bytes": null,
+        "note": "Storage statistics are model-specific. Not every model reports the same storage fields."
+      },
+      "raw_metrics": [
+        {
+          "name": "clear_run_before",
+          "ms": 33.3321,
+          "started_at": "2026-06-13T07:30:03.811Z",
+          "ok": true
+        },
+        {
+          "name": "load_wiki_rows",
+          "ms": 17.8172,
+          "started_at": "2026-06-13T07:30:03.829Z",
+          "ok": true,
+          "rows": 3657,
+          "pages": 399,
+          "revisions": 3656,
+          "categories": 58,
+          "avg_revisions_per_page": 9.1654
+        },
+        {
+          "name": "create_business",
+          "ms": 16.665,
+          "started_at": "2026-06-13T07:30:03.846Z",
+          "ok": true
+        },
+        {
+          "name": "create_schema_v1",
+          "ms": 6.7707,
+          "started_at": "2026-06-13T07:30:03.853Z",
+          "ok": true
+        },
+        {
+          "name": "import_wiki_pages_as_rootid",
+          "ms": 28640.6367,
+          "started_at": "2026-06-13T07:30:32.494Z",
+          "ok": true,
+          "pages": 399,
+          "revisions": 3657,
+          "updates": 3258,
+          "revisions_per_sec": 127.6857,
+          "pages_per_sec": 13.9313,
+          "updates_per_sec": 113.7545
+        },
+        {
+          "name": "sample_latest_reads",
+          "ms": 122.5811,
+          "started_at": "2026-06-13T07:30:32.616Z",
+          "ok": true,
+          "reads": 200,
+          "avg_ms_per_read": 0.6129,
+          "reads_per_sec": 1631.5729
+        },
+        {
+          "name": "sample_history_reads",
+          "ms": 233.1353,
+          "started_at": "2026-06-13T07:30:32.849Z",
+          "ok": true,
+          "reads": 200,
+          "avg_versions": 9.235,
+          "avg_ms_per_history": 1.1657,
+          "history_reads_per_sec": 857.8709
+        },
+        {
+          "name": "sample_version_updates",
+          "ms": 755.9294,
+          "started_at": "2026-06-13T07:30:33.605Z",
+          "ok": true,
+          "updates": 100,
+          "avg_ms_per_update": 7.5593,
+          "updates_per_sec": 132.2875
+        },
+        {
+          "name": "sample_latest_reads_after_update",
+          "ms": 123.6795,
+          "started_at": "2026-06-13T07:30:33.729Z",
+          "ok": true,
+          "reads": 200,
+          "avg_ms_per_read": 0.6184,
+          "reads_per_sec": 1617.0829
+        },
+        {
+          "name": "sample_history_reads_after_update",
+          "ms": 216.6236,
+          "started_at": "2026-06-13T07:30:33.946Z",
+          "ok": true,
+          "reads": 200,
+          "avg_versions": 9.735,
+          "avg_ms_per_history": 1.0831,
+          "history_reads_per_sec": 923.2604
+        },
+        {
+          "name": "sample_deletes",
+          "ms": 562.8466,
+          "started_at": "2026-06-13T07:30:34.509Z",
+          "ok": true,
+          "deletes": 50,
+          "avg_ms_per_delete": 11.2569,
+          "deletes_per_sec": 88.8342
+        },
+        {
+          "name": "sample_latest_reads_after_delete",
+          "ms": 60.8017,
+          "started_at": "2026-06-13T07:30:34.569Z",
+          "ok": true,
+          "reads": 50,
+          "deleted_markers": 50,
+          "not_found_as_current": 50,
+          "avg_ms_per_read": 1.216,
+          "reads_per_sec": 822.3454
+        },
+        {
+          "name": "verify_deletes",
+          "ms": 79.1923,
+          "started_at": "2026-06-13T07:30:34.649Z",
+          "ok": 50,
+          "checks": 50,
+          "failed": 0,
+          "avg_ms_per_check": 1.5838,
+          "checks_per_sec": 631.3745
+        },
+        {
+          "name": "update_schema_to_v2",
+          "ms": 7.7294,
+          "started_at": "2026-06-13T07:30:34.656Z",
+          "ok": true
+        },
+        {
+          "name": "sample_compare_with_latest_schema",
+          "ms": 197.2511,
+          "started_at": "2026-06-13T07:30:34.854Z",
+          "ok": true,
+          "rows": 100,
+          "avg_ms_per_compare": 1.9725,
+          "compares_per_sec": 506.968
+        },
+        {
+          "name": "sample_migrate_to_latest_schema",
+          "ms": 137.6833,
+          "started_at": "2026-06-13T07:30:34.991Z",
+          "ok": true,
+          "rows": 100,
+          "migrated": 5,
+          "alreadyLatest": 0,
+          "requiresReview": 0,
+          "avg_ms_per_migrate": 1.3768,
+          "migrates_per_sec": 726.3045
+        }
+      ]
+    }
+  ]
+}
